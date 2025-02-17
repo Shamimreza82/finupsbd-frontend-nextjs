@@ -22,19 +22,40 @@ import {
 const navItems = [
   {
     title: "Loans",
-    items: ["Personal Loan", "Home Loan", "Education Loan", "Business Loan"],
+    href: "/loans",
+    items: [
+      { name: "Personal Loan", href: "/loans/personal" },
+      { name: "Home Loan", href: "/loans/home" },
+      { name: "Education Loan", href: "/loans/education" },
+      { name: "Business Loan", href: "/loans/business" },
+    ],
   },
   {
     title: "Cards",
-    items: ["Credit Cards", "Debit Cards", "Prepaid Cards"],
+    href: "/cards",
+    items: [
+      { name: "Credit Cards", href: "/cards/credit" },
+      { name: "Debit Cards", href: "/cards/debit" },
+      { name: "Prepaid Cards", href: "/cards/prepaid" },
+    ],
   },
   {
     title: "Other Products",
-    items: ["Insurance", "Investment", "Savings Accounts"],
+    href: "/products",
+    items: [
+      { name: "Insurance", href: "/products/insurance" },
+      { name: "Investment", href: "/products/investment" },
+      { name: "Savings Accounts", href: "/products/savings" },
+    ],
   },
   {
     title: "FinUps Islamic",
-    items: ["Islamic Banking", "Shariah-Compliant Loans", "Zakat Calculator"],
+    href: "/islamic-banking",
+    items: [
+      { name: "Islamic Banking", href: "/islamic-banking" },
+      { name: "Shariah-Compliant Loans", href: "/islamic-banking/loans" },
+      { name: "Zakat Calculator", href: "/islamic-banking/zakat-calculator" },
+    ],
   },
 ];
 
@@ -63,13 +84,16 @@ export default function Navbar() {
           {navItems.map((item) => (
             <DropdownMenu key={item.title}>
               <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-green-600 focus-visible:outline-none">
-                {item.title} ▼
+                <Link href={item.href}>{item.title}</Link>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-48">
                 {item.items.map((subItem) => (
-                  <DropdownMenuItem key={subItem} asChild>
-                    <Link href="#" className="cursor-pointer">
-                      {subItem}
+                  <DropdownMenuItem key={subItem.name} asChild>
+                    <Link
+                      href={subItem.href}
+                      className="cursor-pointer hover:bg-gray-100 p-2 rounded"
+                    >
+                      {subItem.name}
                     </Link>
                   </DropdownMenuItem>
                 ))}
@@ -80,9 +104,11 @@ export default function Navbar() {
 
         {/* Right Section */}
         <div className="flex items-center gap-4">
-          <Button variant="ghost" className="hidden md:flex gap-2">
-            <Globe className="h-4 w-4" />
-            Track Application
+          <Button variant="ghost" className="hidden md:flex gap-2" asChild>
+            <Link href="/track-application">
+              <Globe className="h-4 w-4" />
+              Track Application
+            </Link>
           </Button>
 
           <Button asChild>
@@ -105,24 +131,32 @@ export default function Navbar() {
               <div className="mt-6 space-y-4">
                 {navItems.map((item) => (
                   <div key={item.title} className="space-y-2">
-                    <div className="font-medium text-gray-900">{item.title}</div>
+                    <Link
+                      href={item.href}
+                      className="font-medium text-gray-900 hover:text-green-600"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.title}
+                    </Link>
                     <div className="ml-2 space-y-2">
                       {item.items.map((subItem) => (
                         <Link
-                          key={subItem}
-                          href="#"
+                          key={subItem.name}
+                          href={subItem.href}
                           className="block text-sm text-gray-700 hover:text-green-600"
                           onClick={() => setIsOpen(false)}
                         >
-                          {subItem}
+                          {subItem.name}
                         </Link>
                       ))}
                     </div>
                   </div>
                 ))}
-                <Button variant="outline" className="w-full mt-4 gap-2">
-                  <Globe className="h-4 w-4" />
-                  Track Application
+                <Button variant="outline" className="w-full mt-4 gap-2" asChild>
+                  <Link href="/track-application">
+                    <Globe className="h-4 w-4" />
+                    Track Application
+                  </Link>
                 </Button>
               </div>
             </SheetContent>

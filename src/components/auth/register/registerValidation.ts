@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from "zod";
 
-export const FormSchema = z.object({
+export const registerValidationSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),

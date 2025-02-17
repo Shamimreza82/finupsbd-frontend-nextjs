@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { FormSchema } from "./registerValidation";
 import { Loader2, Apple} from "lucide-react";
 import { useState } from "react";
 import {
@@ -22,23 +21,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { z } from "zod";
+import { loginValidationSchema } from "./loginValidation";
 
-export default function RegisterForm() {
+export default function LoginFrom() {
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof loginValidationSchema>>({
+    resolver: zodResolver(loginValidationSchema),
     defaultValues: {
-      name: "",
       email: "",
-      phone: "+880",
       password: "",
-      confirmPassword: "",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: z.infer<typeof loginValidationSchema>) {
     setIsLoading(true);
     setServerError(null);
     
@@ -63,7 +60,7 @@ export default function RegisterForm() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <Card className="w-[400px]">
         <CardHeader>
-          <CardTitle className="text-2xl">Create New Account</CardTitle>
+          <CardTitle className="text-2xl text-center">Login</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -75,25 +72,6 @@ export default function RegisterForm() {
               )}
 
               <div className="space-y-4">
-                {/* Name Field */}
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Your full name"
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 {/* Email Field */}
                 <FormField
                   control={form.control}
@@ -115,7 +93,7 @@ export default function RegisterForm() {
                 />
 
                 {/* Phone Field */}
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="phone"
                   render={({ field }) => (
@@ -131,7 +109,7 @@ export default function RegisterForm() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
 
                 {/* Password Field */}
                 <FormField
@@ -152,39 +130,21 @@ export default function RegisterForm() {
                   )}
                 />
 
-                {/* Confirm Password */}
-                <FormField
-                  control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
               <Button className="w-full" type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading ? "loggin..." : "Login"}
               </Button>
             </form>
           </Form>
 
           <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="underline hover:text-primary">
-              Login
+            Do not have an account?{" "}
+            <Link href="/register" className="underline hover:text-primary">
+              Register
             </Link>
           </div>
 
