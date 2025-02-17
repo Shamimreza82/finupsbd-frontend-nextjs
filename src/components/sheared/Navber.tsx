@@ -1,66 +1,133 @@
 'use client';
 
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { Menu, Globe, LogIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
+const navItems = [
+  {
+    title: "Loans",
+    items: ["Personal Loan", "Home Loan", "Education Loan", "Business Loan"],
+  },
+  {
+    title: "Cards",
+    items: ["Credit Cards", "Debit Cards", "Prepaid Cards"],
+  },
+  {
+    title: "Other Products",
+    items: ["Insurance", "Investment", "Savings Accounts"],
+  },
+  {
+    title: "FinUps Islamic",
+    items: ["Islamic Banking", "Shariah-Compliant Loans", "Zakat Calculator"],
+  },
+];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="flex items-center justify-between p-4 shadow-md bg-white">
-      {/* Logo */}
-      <div className="flex items-center space-x-2">
-        <img src="/logo.png" alt="Finups BD Logo" className="h-8" />
-        <span className="text-2xl font-semibold text-gray-800">Finups <span className="text-green-500">bd</span></span>
-      </div>
+    <nav className="sticky top-0 z-50 bg-white shadow-sm">
+      <div className="container flex h-16 items-center justify-between px-4">
+        {/* Logo Section */}
+        <Link href="/" className="flex items-center space-x-2">
+          <Image
+            src="/logo.png"
+            alt="Finups BD Logo"
+            width={40}
+            height={40}
+            className="h-8 w-8"
+          />
+          <span className="text-2xl font-semibold">
+            Finups <span className="text-green-600">bd</span>
+          </span>
+        </Link>
 
-      {/* Navigation Links */}
-      <div className="hidden md:flex space-x-6 text-gray-700">
-        <div className="relative group">
-          <button className="hover:text-blue-600">Loans ▼</button>
-          {/* Dropdown */}
-          <div className="absolute left-0 mt-2 hidden w-48 bg-white shadow-md rounded-md group-hover:block">
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Personal Loan</a>
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Home Loan</a>
-          </div>
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-6">
+          {navItems.map((item) => (
+            <DropdownMenu key={item.title}>
+              <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-green-600 focus-visible:outline-none">
+                {item.title} ▼
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48">
+                {item.items.map((subItem) => (
+                  <DropdownMenuItem key={subItem} asChild>
+                    <Link href="#" className="cursor-pointer">
+                      {subItem}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ))}
         </div>
 
-        <div className="relative group">
-          <button className="hover:text-blue-600">Cards ▼</button>
-          <div className="absolute left-0 mt-2 hidden w-48 bg-white shadow-md rounded-md group-hover:block">
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Credit Cards</a>
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Debit Cards</a>
-          </div>
-        </div>
+        {/* Right Section */}
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" className="hidden md:flex gap-2">
+            <Globe className="h-4 w-4" />
+            Track Application
+          </Button>
 
-        <div className="relative group">
-          <button className="hover:text-blue-600">Other Products ▼</button>
-          <div className="absolute left-0 mt-2 hidden w-48 bg-white shadow-md rounded-md group-hover:block">
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Insurance</a>
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Investment</a>
-          </div>
-        </div>
+          <Button asChild>
+            <Link href="/login" className="gap-2">
+              <LogIn className="h-4 w-4" />
+              Sign In
+            </Link>
+          </Button>
 
-        <div className="relative group">
-          <button className="hover:text-blue-600">FinUps Islamic ▼</button>
-          <div className="absolute left-0 mt-2 hidden w-48 bg-white shadow-md rounded-md group-hover:block">
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Islamic Banking</a>
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Shariah-Compliant Loans</a>
-          </div>
+          {/* Mobile Menu */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger className="md:hidden">
+              <Menu className="h-6 w-6" />
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px]">
+              <SheetHeader>
+                <SheetTitle className="text-left">Menu</SheetTitle>
+              </SheetHeader>
+              
+              <div className="mt-6 space-y-4">
+                {navItems.map((item) => (
+                  <div key={item.title} className="space-y-2">
+                    <div className="font-medium text-gray-900">{item.title}</div>
+                    <div className="ml-2 space-y-2">
+                      {item.items.map((subItem) => (
+                        <Link
+                          key={subItem}
+                          href="#"
+                          className="block text-sm text-gray-700 hover:text-green-600"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          {subItem}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <Button variant="outline" className="w-full mt-4 gap-2">
+                  <Globe className="h-4 w-4" />
+                  Track Application
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
-      </div>
-
-      {/* Right Section */}
-      <div className="flex items-center space-x-4">
-        <a href="#" className="text-gray-700 hover:text-blue-600 flex items-center">
-          🌐 Track Application
-        </a>
-        <Button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">Sign in</Button>
-        {/* Mobile Menu Button */}
-        <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
-          <Menu size={24} />
-        </button>
       </div>
     </nav>
   );
