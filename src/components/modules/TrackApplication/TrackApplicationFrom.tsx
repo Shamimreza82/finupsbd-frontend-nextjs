@@ -94,7 +94,7 @@ export default function TrackApplicationForm() {
             </Button>
 
             <div className="text-center text-sm">
-              <Link href="/track-application/forgot-application-id" className="text-blue-600 hover:underline">
+              <Link href="/application/forgot-application-id" className="text-blue-600 hover:underline">
                 Forgot Application ID?
               </Link>
             </div>

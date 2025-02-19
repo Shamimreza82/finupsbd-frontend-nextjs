@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Loader2, Apple} from "lucide-react";
 import { useState } from "react";
+
 import {
   Form,
   FormControl,
@@ -22,32 +23,40 @@ import {
 } from "@/components/ui/form";
 import { z } from "zod";
 import { loginValidationSchema } from "./loginValidation";
+import { loginUser } from "@/services/AuthService";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function LoginFrom() {
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof loginValidationSchema>>({
     resolver: zodResolver(loginValidationSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "shamim@gmail.com",
+      password: "11223344",
     },
   });
 
   async function onSubmit(data: z.infer<typeof loginValidationSchema>) {
     setIsLoading(true);
     setServerError(null);
-    
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(data);
-      // Handle successful registration
+      const result = await loginUser(data)
+      if(result.success){
+        toast.success('Login successfully')
+        router.push("/")
+       
+      }
     } catch (error: any) {
-      setServerError("Registration failed. Please try again later.");
+      setServerError("Login failed. Please try again later.");
+      toast.error('Login failed')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 

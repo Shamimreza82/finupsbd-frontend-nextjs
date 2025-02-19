@@ -83,7 +83,7 @@ export default function ForgotApplicationId() {
 
             <div className="text-center text-sm">
               <Link 
-                href="/track-application" 
+                href="/application/track-application" 
                 className="text-blue-600 hover:underline flex items-center justify-center gap-1"
               >
                 &lt; Back to Track Application

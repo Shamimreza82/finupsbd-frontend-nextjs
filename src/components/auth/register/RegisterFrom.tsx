@@ -23,17 +23,20 @@ import {
 } from "@/components/ui/form";
 import { z } from "zod";
 import { registerValidationSchema } from "./registerValidation";
+import { registerUser } from "@/services/AuthService";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof registerValidationSchema>>({
     resolver: zodResolver(registerValidationSchema),
     defaultValues: {
       name: "",
       email: "",
-      phone: "+880",
+      phone: "",
       password: "",
       confirmPassword: "",
     },
@@ -48,6 +51,9 @@ export default function RegisterForm() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log(data);
       // Handle successful registration
+     const result = await registerUser(data)
+      console.log(result)
+      
     } catch (error: any) {
       setServerError("Registration failed. Please try again later.");
     } finally {

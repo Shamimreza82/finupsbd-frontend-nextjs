@@ -1,105 +1,112 @@
-// "use server"
+"use server"
 
-// import { jwtDecode } from "jwt-decode";
-// import { cookies } from "next/headers";
-
-
-// import { FieldValues } from "react-hook-form"
-
-// export const registerUser = async (userData: FieldValues) => {
-//     console.log("Sending Data:", JSON.stringify(userData));
-
-//     try {
-//         const res = await fetch("http://localhost:3001/api/v1/user", {
-//             method: "POST",
-//             headers: {
-//                 "Accept": "application/json",
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify(userData),
-//         });
-
-//         console.log("Response Status:", res.status);
-
-//         if (!res.ok) {
-//             const errorData = await res.json().catch(() => null);
-//             console.error("API Error Response:", errorData);
-//             throw new Error(`HTTP error! Status: ${res.status} - ${errorData?.message || "Unknown error"}`);
-//         }
+import { jwtDecode } from "jwt-decode";
+import { cookies } from "next/headers";
 
 
-//         return await res.json();
-//     } catch (error) {
-//         console.error("Error registering user:", error);
-//         return { success: false, message: error instanceof Error ? error.message : "An unknown error occurred" };
-//     }
-// };
+import { FieldValues } from "react-hook-form"
+
+export const registerUser = async (userData: FieldValues) => {
+
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/auth/signUp`, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+        });
+
+        console.log("Response Status:", res.status);
+
+        // if (!res.ok) {
+        //     const errorData = await res.json().catch(() => null);
+        //     console.error("API Error Response:", errorData);
+        //     throw new Error(`HTTP error! Status: ${res.status} - ${errorData?.message || "Unknown error"}`);
+        // }
 
 
-
-
-
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-
-// export const loginUser = async (userData: FieldValues) => {
-//     console.log("Sending Data:", JSON.stringify(userData));
-
-//     try {
-//         const res = await fetch("http://localhost:3001/api/v1/auth/login", {
-//             method: "POST",
-//             headers: {
-//                 "Accept": "application/json",
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify(userData),
-//         });
-
-//         console.log("Response Status:", res.status);
-
-//         if (!res.ok) {
-//             const errorData = await res.json().catch(() => null);
-//             console.error("API Error Response:", errorData);
-//             throw new Error(`HTTP error! Status: ${res.status} - ${errorData?.message || "Unknown error"}`);
-//         }
-
-//         const result = await res.json()
-
-//         if (result.success) {
-//             const cookieStore = await cookies()
-//             cookieStore.set("accessToken", result?.data?.accessToken)
-//         }
-//         return result
-//     } catch (error) {
-//         console.error("Error registering user:", error);
-//         return { success: false, message: error instanceof Error ? error.message : "An unknown error occurred" };
-//     }
-// };
+        return await res.json();
+    } catch (error) {
+        console.error("Error registering user:", error);
+        return { success: false, message: error instanceof Error ? error.message : "An unknown error occurred" };
+    }
+};
 
 
 
 
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+export const loginUser = async (userData: FieldValues) => {
+    console.log("Sending Data:", JSON.stringify(userData));
+
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+        });
+
+        console.log("Response Status:", res.status);
+
+        // if (!res.ok) {
+        //     const errorData = await res.json().catch(() => null);
+        //     console.error("API Error Response:", errorData);
+        //     throw new Error(`HTTP error! Status: ${res.status} - ${errorData?.message || "Unknown error"}`);
+        // }
+
+        const result = await res.json()
+        console.log(result)
+        if(result.statusCode === 400){
+            return result
+        }
+
+        if (result.success) {
+            const cookieStore = await cookies()
+            cookieStore.set("accessToken", result?.data?.accessToken)
+        }
+        return result
+    } catch (error) {
+        console.error("Error registering user:", error);
+        return { success: false, message: error instanceof Error ? error.message : "An unknown error occurred" };
+    }
+};
 
 
 
 
 
-// export const getCurrentUser = async () => {
-//     const accessToken = (await cookies()).get("accessToken")?.value
+export const getCurrentUser = async () => {
+    const accessToken = (await cookies()).get("accessToken")?.value
 
 
-//     if (!accessToken) {
-//         console.error("No token found");
-//         return null
-//     }
+    if (!accessToken) {
+        console.error("No token found");
+        return null
+    }
 
-//     try {
-//         const decodedData = jwtDecode(accessToken);
-//         return decodedData;
-//     } catch (error) {
-//         console.error("Token decoding failed:", error);
-//     }
-// };
+    try {
+        const decodedData = jwtDecode(accessToken);
+        return decodedData;
+    } catch (error) {
+        console.error("Token decoding failed:", error);
+    }
+};
+
+
+export const logout = async() => {
+    (await cookies()).delete("accessToken")
+}
+
+
+
+
 
 
 // export const recaptchaTokenVerification = async (token: string) => {
