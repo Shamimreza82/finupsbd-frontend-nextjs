@@ -38,7 +38,7 @@ export const registerUser = async (userData: FieldValues) => {
 
 
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 export const loginUser = async (userData: FieldValues) => {
     console.log("Sending Data:", JSON.stringify(userData));

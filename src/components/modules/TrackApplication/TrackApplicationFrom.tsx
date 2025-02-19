@@ -1,109 +1,109 @@
 
-'use client';
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import Link from "next/link";
+// 'use client';
+// import { useForm } from "react-hook-form";
+// import { z } from "zod";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+// import Link from "next/link";
 
-const FormSchema = z.object({
-  trackingNumber: z.string().min(6, "Tracking number must be at least 6 characters"),
-  fullName: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().regex(/^\+8801[3-9]\d{8}$/, "Invalid Bangladeshi phone number"),
-});
+// const FormSchema = z.object({
+//   trackingNumber: z.string().min(6, "Tracking number must be at least 6 characters"),
+//   fullName: z.string().min(2, "Name must be at least 2 characters"),
+//   phone: z.string().regex(/^\+8801[3-9]\d{8}$/, "Invalid Bangladeshi phone number"),
+// });
 
-export default function TrackApplicationForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      trackingNumber: "",
-      fullName: "",
-      phone: "+880",
-    },
-  });
+// export default function TrackApplicationForm() {
+//   const form = useForm<z.infer<typeof FormSchema>>({
+//     resolver: zodResolver(FormSchema),
+//     defaultValues: {
+//       trackingNumber: "",
+//       fullName: "",
+//       phone: "+880",
+//     },
+//   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-    // Handle form submission
-  }
+//   function onSubmit(data: z.infer<typeof FormSchema>) {
+//     console.log(data);
+//     // Handle form submission
+//   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center">Track your Application</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-gray-600 mb-6">
-            Enter your tracking number to see your application status
-          </p>
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+//       <Card className="w-full max-w-md">
+//         <CardHeader>
+//           <CardTitle className="text-2xl text-center">Track your Application</CardTitle>
+//         </CardHeader>
+//         <CardContent>
+//           <p className="text-center text-gray-600 mb-6">
+//             Enter your tracking number to see your application status
+//           </p>
 
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-4">
-              {/* Tracking Number */}
-              <div>
-                <Label htmlFor="trackingNumber">Tracking Number</Label>
-                <Input
-                  id="trackingNumber"
-                  placeholder="Enter your tracking number"
-                  {...form.register("trackingNumber")}
-                />
-                {form.formState.errors.trackingNumber && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {form.formState.errors.trackingNumber.message}
-                  </p>
-                )}
-              </div>
+//           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+//             <div className="space-y-4">
+//               {/* Tracking Number */}
+//               <div>
+//                 <Label htmlFor="trackingNumber">Tracking Number</Label>
+//                 <Input
+//                   id="trackingNumber"
+//                   placeholder="Enter your tracking number"
+//                   {...form.register("trackingNumber")}
+//                 />
+//                 {form.formState.errors.trackingNumber && (
+//                   <p className="text-red-500 text-sm mt-1">
+//                     {form.formState.errors.trackingNumber.message}
+//                   </p>
+//                 )}
+//               </div>
 
-              {/* Full Name */}
-              <div>
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  placeholder="Enter your full name"
-                  {...form.register("fullName")}
-                />
-                {form.formState.errors.fullName && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {form.formState.errors.fullName.message}
-                  </p>
-                )}
-              </div>
+//               {/* Full Name */}
+//               <div>
+//                 <Label htmlFor="fullName">Full Name</Label>
+//                 <Input
+//                   id="fullName"
+//                   placeholder="Enter your full name"
+//                   {...form.register("fullName")}
+//                 />
+//                 {form.formState.errors.fullName && (
+//                   <p className="text-red-500 text-sm mt-1">
+//                     {form.formState.errors.fullName.message}
+//                   </p>
+//                 )}
+//               </div>
 
-              {/* Phone Number */}
-              <div>
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  placeholder="+880XXXXXXXXXX" 
-                  {...form.register("phone")}
-                />
-                {form.formState.errors.phone && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {form.formState.errors.phone.message}
-                  </p>
-                )}
-              </div>
-            </div>
+//               {/* Phone Number */}
+//               <div>
+//                 <Label htmlFor="phone">Phone Number</Label>
+//                 <Input
+//                   id="phone"
+//                   placeholder="+880XXXXXXXXXX" 
+//                   {...form.register("phone")}
+//                 />
+//                 {form.formState.errors.phone && (
+//                   <p className="text-red-500 text-sm mt-1">
+//                     {form.formState.errors.phone.message}
+//                   </p>
+//                 )}
+//               </div>
+//             </div>
 
-            <Button type="submit" className="w-full">
-              Track Application
-            </Button>
+//             <Button type="submit" className="w-full">
+//               Track Application
+//             </Button>
 
-            <div className="text-center text-sm">
-              <Link href="/application/forgot-application-id" className="text-blue-600 hover:underline">
-                Forgot Application ID?
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+//             <div className="text-center text-sm">
+//               <Link href="/application/forgot-application-id" className="text-blue-600 hover:underline">
+//                 Forgot Application ID?
+//               </Link>
+//             </div>
+//           </form>
+//         </CardContent>
+//       </Card>
+//     </div>
+//   );
+// }
 
 
 
