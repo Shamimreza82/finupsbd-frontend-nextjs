@@ -40,7 +40,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-gray-700 mt-10 pt-4 text-center text-gray-400">
         <p>&copy; 2024 <span className="text-green-500">Finups BD</span>. All Rights Reserved</p>
-        <div className="flex justify-center space-x-6 mt-2">
+        <div className="flex justify-center md:space-x-6 mt-2">
           <Link href="#" className="hover:text-green-500">Terms & Conditions</Link>
           <Link href="#" className="hover:text-green-500">ADM Policy</Link>
           <Link href="#" className="hover:text-green-500">EMI Policy</Link>

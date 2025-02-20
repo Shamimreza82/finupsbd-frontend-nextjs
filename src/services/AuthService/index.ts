@@ -53,13 +53,11 @@ export const loginUser = async (userData: FieldValues) => {
             body: JSON.stringify(userData),
         });
 
-        console.log("Response Status:", res.status);
-
-        // if (!res.ok) {
-        //     const errorData = await res.json().catch(() => null);
-        //     console.error("API Error Response:", errorData);
-        //     throw new Error(`HTTP error! Status: ${res.status} - ${errorData?.message || "Unknown error"}`);
-        // }
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => null);
+            console.error("API Error Response:", errorData);
+            throw new Error(`HTTP error! Status: ${res.status} - ${errorData?.message || "Unknown error"}`);
+        }
 
         const result = await res.json()
         console.log(result)
@@ -73,8 +71,7 @@ export const loginUser = async (userData: FieldValues) => {
         }
         return result
     } catch (error) {
-        console.error("Error registering user:", error);
-        return { success: false, message: error instanceof Error ? error.message : "An unknown error occurred" };
+        console.error("Error registering user:", {error});
     }
 };
 

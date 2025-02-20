@@ -44,14 +44,15 @@ export default function LoginFrom() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       const result = await loginUser(data)
+      console.log(result.meassage)
       if(result.success){
         toast.success('Login successfully')
         router.push("/")
-       
       }
+
     } catch (error: any) {
       setServerError("Login failed. Please try again later.");
-      toast.error('Login failed')
+      toast.error('Login failed. Please try again later.')
     } finally {
       setIsLoading(false)
     }
