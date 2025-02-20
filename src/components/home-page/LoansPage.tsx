@@ -6,11 +6,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { EligibilityModal } from "@/components/modules/eligiblity/EligibilityModal"
+import { toast } from "sonner"
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
+import { Terminal } from "lucide-react"
 
 function LoanPage() {
     // Track the selected loan type
     const [loanType, setLoanType] = useState("")
     const [openEligibility, setOpenEligibility] = useState(false)
+    const [error, setError] = useState(false)
 
     console.log(loanType)
     // Send data to backend (Compare Loan)
@@ -37,6 +41,10 @@ function LoanPage() {
 
     // Send data to backend (Check Eligibility)
     async function handleCheckEligibility() {
+        if (loanType == "") {
+            setError(true)
+            return toast.error("Select any loan")
+        }
         setOpenEligibility(true)
     }
 
@@ -44,18 +52,26 @@ function LoanPage() {
         <div className="p-6">
             {/* Outer container */}
             <div className="bg-green-100 flex justify-center items-center py-11">
-                <Tabs defaultValue="loans" className="bg-slate-100 px-36 py-10">
+                <Tabs defaultValue="loans" >
                     {/* Tabs List */}
-                    <TabsList className="mb-4">
+                    <div className="flex justify-center">
+                        <TabsList  className="md:space-x-12">
                         <TabsTrigger value="loans">Loans</TabsTrigger>
                         <TabsTrigger value="cards">Cards</TabsTrigger>
                         <TabsTrigger value="investment">Investment</TabsTrigger>
                         <TabsTrigger value="insurance">Bima/Insurance</TabsTrigger>
                     </TabsList>
+                    </div>
 
                     {/* Loans tab content */}
-                    <div className="bg-slate-300 p-7">
+                    <div className="bg-gray-50 md:px-40 py-4 -m-4 pt-8 rounded-lg">
                         <TabsContent value="loans">
+                            {error ? <Alert variant="destructive" className="mb-4">
+                                <Terminal className="h-4 w-4 " />
+                                <AlertDescription>
+                                    Please Select any loan option !!
+                                </AlertDescription>
+                            </Alert> : null}
                             <div className="flex flex-col space-y-4">
                                 {/* Radio buttons for loan types */}
                                 <RadioGroup
