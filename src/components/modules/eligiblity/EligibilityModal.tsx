@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { format } from "date-fns"
-import { CalendarIcon, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 import {
   Dialog,
@@ -25,8 +25,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner"
@@ -49,7 +47,6 @@ export function EligibilityModal({
 }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [calendarOpen, setCalendarOpen] = useState(false)
 
 
   const {
@@ -167,7 +164,7 @@ export function EligibilityModal({
                   {errors.gender && <div className="text-sm text-red-500">{errors.gender.message}</div>}
                 </div>
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label>Date of Birth</Label>
                   <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                     <PopoverTrigger asChild>
@@ -203,7 +200,7 @@ export function EligibilityModal({
                     </PopoverContent>
                   </Popover>
                   {errors.dateOfBirth && <div className="text-sm text-red-500">{errors.dateOfBirth.message}</div>}
-                </div>
+                </div> */}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
