@@ -74,7 +74,7 @@ export function EligibilityModal({
       case 1:
         isValid = await trigger([
           "gender",
-          "dateOfBirth",
+          // "dateOfBirth",
           "profession",
           "jobLocation",
           "monthlyIncome",
