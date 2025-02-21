@@ -32,7 +32,7 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+    <section className="container mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Left Content */}
         <div className="lg:w-1/2">

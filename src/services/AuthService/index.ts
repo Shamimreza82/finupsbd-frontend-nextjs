@@ -79,6 +79,7 @@ export const loginUser = async (userData: FieldValues) => {
 
 
 
+
 export const getCurrentUser = async () => {
     const accessToken = (await cookies()).get("accessToken")?.value
 
@@ -100,6 +101,39 @@ export const getCurrentUser = async () => {
 export const logout = async() => {
     (await cookies()).delete("accessToken")
 }
+
+
+
+
+
+
+export const OtpVerification = async (email: string | null, pin: string) => {
+    
+    const payload = {
+        email, 
+        pin
+    }
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+        return res
+    } catch (error) {
+        console.error("Token decoding failed:", error);
+    }
+    
+};
+
+
+
+
+
+
 
 
 

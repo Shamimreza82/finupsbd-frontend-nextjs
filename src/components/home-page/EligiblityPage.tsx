@@ -10,7 +10,7 @@ import { toast } from "sonner"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
 import { Terminal } from "lucide-react"
 
-function LoanPage() {
+function EligiblityPage() {
     // Track the selected loan type
     const [loanType, setLoanType] = useState("")
     const [openEligibility, setOpenEligibility] = useState(false)
@@ -54,17 +54,17 @@ function LoanPage() {
             <div className="bg-green-100 flex justify-center items-center py-11">
                 <Tabs defaultValue="loans" >
                     {/* Tabs List */}
-                    <div className="flex justify-center">
-                        <TabsList  className="md:space-x-12">
-                        <TabsTrigger value="loans">Loans</TabsTrigger>
-                        <TabsTrigger value="cards">Cards</TabsTrigger>
-                        <TabsTrigger value="investment">Investment</TabsTrigger>
-                        <TabsTrigger value="insurance">Bima/Insurance</TabsTrigger>
-                    </TabsList>
+                    <div className="flex justify-center ">
+                        <TabsList className="md:space-x-12 shadow-md">
+                            <TabsTrigger value="loans">Loans</TabsTrigger>
+                            <TabsTrigger value="cards">Cards</TabsTrigger>
+                            <TabsTrigger value="investment">Investment</TabsTrigger>
+                            <TabsTrigger value="insurance">Bima/Insurance</TabsTrigger>
+                        </TabsList>
                     </div>
 
                     {/* Loans tab content */}
-                    <div className="bg-gray-50 md:px-40 py-4 -m-4 pt-8 rounded-lg">
+                    <div className="bg-gray-50 md:px-40 py-4 -m-4 pt-8 rounded-xl">
                         <TabsContent value="loans">
                             {error ? <Alert variant="destructive" className="mb-4">
                                 <Terminal className="h-4 w-4 " />
@@ -177,4 +177,4 @@ function LoanPage() {
     )
 }
 
-export default LoanPage
+export default EligiblityPage

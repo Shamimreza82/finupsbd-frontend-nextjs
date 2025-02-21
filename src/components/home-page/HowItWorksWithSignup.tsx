@@ -39,7 +39,7 @@ export default function HowItWorksWithSignup() {
 
 
     return (
-        <div className="w-full max-w-7xl mx-auto px-4 py-16 flex flex-col md:flex-row gap-16 items-center">
+        <div className="container mx-auto px-4 py-16 flex flex-col md:flex-row gap-16 items-center">
             {/* Left Column - How It Works */}
             <div className="flex-1">
                 <div className="inline-block text-green-700 font-medium mb-4">How It Works</div>

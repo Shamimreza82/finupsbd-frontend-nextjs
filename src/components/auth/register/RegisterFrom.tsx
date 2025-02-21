@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label } from "@/components/ui/label";   
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 
@@ -20,22 +20,26 @@ import {
 } from "@/components/ui/form";
 import { z } from "zod";
 import { registerValidationSchema } from "./registerValidation";
-import { registerUser } from "@/services/AuthService";
 import { useRouter } from "next/navigation";
+
+
+
 
 export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState<string | null>('')
+  const [openOtpVerificition, setOpenOtpVerificition] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter()
 
   const form = useForm<z.infer<typeof registerValidationSchema>>({
     resolver: zodResolver(registerValidationSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      password: "",
-      confirmPassword: "",
+      name: "reza",
+      email: "reza@gmail.com",
+      phone: "01910479167",
+      password: "11223344",
+      confirmPassword: "11223344",
     },
   });
 
@@ -48,9 +52,10 @@ export default function RegisterForm() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log(data);
       // Handle successful registration
-     const result = await registerUser(data)
-      console.log(result)
-      
+    //  const result = await registerUser(data)  
+    //   console.log(result)
+      setEmail(data.email)
+      setOpenOtpVerificition(true)
     } catch (error: any) {
       setServerError("Registration failed. Please try again later.");
     } finally {

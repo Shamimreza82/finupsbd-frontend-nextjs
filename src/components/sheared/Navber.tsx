@@ -30,7 +30,7 @@ import { usePathname, useRouter } from "next/navigation";
 const navItems = [
   {
     title: "Loans",
-    href: "/loans",
+    href: "#",
     items: [
       { name: "Personal Loan", href: "/loans/personal" },
       { name: "Home Loan", href: "/loans/home" },
@@ -40,7 +40,7 @@ const navItems = [
   },
   {
     title: "Cards",
-    href: "/cards",
+    href: "#",
     items: [
       { name: "Credit Cards", href: "/cards/credit" },
       { name: "Debit Cards", href: "/cards/debit" },
@@ -49,7 +49,7 @@ const navItems = [
   },
   {
     title: "Other Products",
-    href: "/products",
+    href: "#",
     items: [
       { name: "Insurance", href: "/products/insurance" },
       { name: "Investment", href: "/products/investment" },
@@ -58,7 +58,7 @@ const navItems = [
   },
   {
     title: "FinUps Islamic",
-    href: "/islamic-banking",
+    href: "#",
     items: [
       { name: "Islamic Banking", href: "/islamic-banking" },
       { name: "Shariah-Compliant Loans", href: "/islamic-banking/loans" },
@@ -68,12 +68,13 @@ const navItems = [
 ];
 
 export default function Navbar() {
+  const [hoveredMenu, setHoveredMenu] = useState<string | null>(); // Track hovered menu
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname()
   const router = useRouter()
 
   const { user, setIsLoading } = useUser()
-  console.log(user)
+
 
   const handleLogOut = () => {
     logout()
@@ -86,7 +87,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-sm">
       <div>
-        <div className="flex md:justify-around justify-between h-16 items-center px-4">
+        <div className="flex container mx-auto justify-between h-16 items-center px-4">
           <div className="flex items-center justify-center gap-12">
             {/* Logo Section */}
             <Link href="/" className="flex items-center space-x-2">
@@ -105,25 +106,36 @@ export default function Navbar() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-6">
               {navItems.map((item) => (
-                <DropdownMenu key={item.title}>
-                  <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-green-600 focus-visible:outline-none">
-                    <Link href={item.href}>{item.title}</Link>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-48">
-                    {item.items.map((subItem) => (
-                      <DropdownMenuItem key={subItem.name} asChild>
+                <div
+                  key={item.title}
+                  className="relative"
+                  onMouseEnter={() => setHoveredMenu(item.title)}
+                  onMouseLeave={() => setHoveredMenu(null)}
+                >
+                  <Link
+                    href={item.href}
+                    className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-green-600 focus-visible:outline-none"
+                  >
+                    {item.title}
+                  </Link>
+                  {hoveredMenu === item.title && (
+                    <div className="absolute left-0 w-48 bg-white border shadow-md rounded-md z-50">
+                      {/* Added z-50 */}
+                      {item.items.map((subItem) => (
                         <Link
+                          key={subItem.name}
                           href={subItem.href}
-                          className="cursor-pointer hover:bg-gray-100 p-2 rounded"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                         >
                           {subItem.name}
                         </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
+
           </div>
 
           {/* Right Section */}
@@ -214,3 +226,6 @@ export default function Navbar() {
     </nav>
   );
 }
+
+
+
