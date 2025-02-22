@@ -26,6 +26,7 @@ const EligiblityPage = () => {
         <LoanComparison
         submissionData={submissionData}
         />
+        
     </div>
   )
 }

@@ -1,19 +1,31 @@
 "use client"
-import React, { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { format } from "date-fns"
-import { Loader2 } from "lucide-react"
 
+import * as React from "react"
+import { CalendarIcon, Check, X } from "lucide-react"
+import { format } from "date-fns"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Card } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog"
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Select,
   SelectContent,
@@ -21,437 +33,832 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Progress } from "@/components/ui/progress"
-import { toast } from "sonner"
-import { eligiblityValidationSchema } from "./eligiblityValidation"
-import { useRouter } from "next/navigation"
 
-// Update the Zod schema to include all required fields
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { formSchema } from "./eligiblityValidation"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
-
-type EligibilityFormData = z.infer<typeof eligiblityValidationSchema>
-
-export function EligibilityModal({
-  open,
-  onOpenChange,
-  loanType,
-}: {
+interface EligibilityCheckProps {
   open: boolean
   onOpenChange: (val: boolean) => void
-  loanType: string
-}) {
-  const [currentStep, setCurrentStep] = useState(1)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  loanType: string // The type of loan (if needed externally)
+}
 
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    trigger,
-    reset,
-    formState: { errors },
-  } = useForm<EligibilityFormData>({
-    resolver: zodResolver(eligiblityValidationSchema),
+export default function EligiblityCheck({
+  open,
+  onOpenChange,
+  loanType, // The type of loan the user is applying for
+}: EligibilityCheckProps) {
+  const [step, setStep] = React.useState(1)
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      hasExistingLoan: false,
-      hasCreditCard: false,
+      gender: "",
+      dateOfBirth: undefined,
+      profession: "",
+      businessOwnerType: "",
+      businessType: "",
+      sharePortion: "",
+      tradeLicenseAge: "",
+      monthlyIncome: "",
+      loanTenure: "",
+      hasLoan: "no",
+      numberOfLoans: "",
+      loanType: "",
+      hasCreditCard: "no",
+      numberOfCards: "",
+      cardType: "",
+      hasRentalIncome: "no",
+      rentalArea: "",
+      rentalIncome: "",
+      // Contact Info
+      name: "shamim",
+      email: "shamim@gmail.com",
+      phone: "01910479167",
+      termsAccepted: true,
     },
   })
 
+  // Sample data arrays
+  const professions = ["Salaried", "Business Owner"]
+  const loanTypes = ["Personal", "Home", "Car", "Education"]
+  const cardTypes = ["Credit", "Debit", "Prepaid"]
+  // For the tradeLicenseAge, you can dynamically generate or define as needed
+  const tradeLicenseYears = Array.from({ length: 10 }, (_, i) => i + 1)
 
-  const router = useRouter()
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("Form submitted with:", values)
+    // TODO: Place your API call or final submission logic here
+    // onOpenChange(false) // close the modal after successful submission
+  }
+
+
+
+
+
+  const renderStep1 = () => (
+    <div className="space-y-4 md:grid md:grid-cols-2 items-center gap-4">
+      {/* Gender */}
+      <FormField
+        name="gender"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Gender*</FormLabel>
+            <Select
+              onValueChange={(val) => field.onChange(val)}
+              value={field.value}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Your Gender" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Date of Birth */}
+      <FormField
+        name="dateOfBirth"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem className="flex flex-col">
+            <FormLabel>Date of Birth (DD/MM/YYYY)*</FormLabel>
+            <Popover>
+              <PopoverTrigger asChild>
+                <FormControl>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full pl-3 text-left font-normal",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    {field.value
+                      ? format(field.value, "dd/MM/yyyy")
+                      : "DD/MM/YY"}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={field.value}
+                  onSelect={field.onChange}
+                  disabled={(date) =>
+                    date > new Date() || date < new Date("1900-01-01")
+                  }
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Profession */}
+      <FormField
+        name="profession"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Your Profession*</FormLabel>
+            <Select
+              onValueChange={(val) => field.onChange(val)}
+              value={field.value}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Profession" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {professions.map((profession) => (
+                  <SelectItem
+                    key={profession}
+                    value={profession.toLowerCase()}
+                  >
+                    {profession}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Only show if "Business Owner" */}
+      {form.watch("profession") === "business owner" && (
+        <>
+          {/* Business Owner Type */}
+          <FormField
+            name="businessOwnerType"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Business Owner Type*</FormLabel>
+                <Select
+                  onValueChange={(val) => field.onChange(val)}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Business owner type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="sole">Sole Proprietorship</SelectItem>
+                    <SelectItem value="partnership">Partnership</SelectItem>
+                    <SelectItem value="corporation">Corporation</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Business Type */}
+          <FormField
+            name="businessType"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Business Type*</FormLabel>
+                <Select
+                  onValueChange={(val) => field.onChange(val)}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="retail">Retail</SelectItem>
+                    <SelectItem value="service">Service</SelectItem>
+                    <SelectItem value="manufacturing">
+                      Manufacturing
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Share Portion (%) */}
+          <FormField
+            name="sharePortion"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Share Portion (%)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Enter share portion"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Trade License Age */}
+          <FormField
+            name="tradeLicenseAge"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Trade License Age</FormLabel>
+                <Select
+                  onValueChange={(val) => field.onChange(val)}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Year" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {tradeLicenseYears.map((year) => (
+                      <SelectItem key={year} value={String(year)}>
+                        {year === 1 ? `${year} year` : `${year} years`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </>
+      )}
+
+      {/* Monthly Income */}
+      <FormField
+        name="monthlyIncome"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Monthly Income (BDT)*</FormLabel>
+            <FormControl>
+              <Input type="number" placeholder="0" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Expected Loan Tenure */}
+      <FormField
+        name="loanTenure"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Expected Loan Tenure (Month)*</FormLabel>
+            <FormControl>
+              <Input type="number" placeholder="0" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  )
+
+  const renderStep2 = () => (
+    <div className="space-y-4">
+      {/* Do you have any Loan? */}
+      <FormField
+        name="hasLoan"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem className="space-y-3">
+            <FormLabel>Do you have any Loan?</FormLabel>
+            <FormControl>
+              <RadioGroup
+                onValueChange={field.onChange}
+                value={field.value}
+                className="flex flex-row space-x-4"
+              >
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <RadioGroupItem value="yes" />
+                  </FormControl>
+                  <FormLabel className="font-normal">Yes</FormLabel>
+                </FormItem>
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <RadioGroupItem value="no" />
+                  </FormControl>
+                  <FormLabel className="font-normal">No</FormLabel>
+                </FormItem>
+              </RadioGroup>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {form.watch("hasLoan") === "yes" && (
+        <>
+          {/* Number of Loan */}
+          <FormField
+            name="numberOfLoans"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Loans*</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="1" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SelectItem key={num} value={String(num)}>
+                        {num}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Loan Type */}
+          <FormField
+            name="loanType"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Loan Type*</FormLabel>
+                <Select
+                  onValueChange={(val) => field.onChange(val)}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select loan type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {loanTypes.map((type) => (
+                      <SelectItem key={type} value={type.toLowerCase()}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </>
+      )}
+
+      {/* Do you have any Credit Card? */}
+      <FormField
+        name="hasCreditCard"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem className="space-y-3">
+            <FormLabel>Do you have any Credit Card?</FormLabel>
+            <FormControl>
+              <RadioGroup
+                onValueChange={field.onChange}
+                value={field.value}
+                className="flex flex-row space-x-4"
+              >
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <RadioGroupItem value="yes" />
+                  </FormControl>
+                  <FormLabel className="font-normal">Yes</FormLabel>
+                </FormItem>
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <RadioGroupItem value="no" />
+                  </FormControl>
+                  <FormLabel className="font-normal">No</FormLabel>
+                </FormItem>
+              </RadioGroup>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* If credit card is yes */}
+      {form.watch("hasCreditCard") === "yes" && (
+        <>
+          {/* Number of Cards */}
+          <FormField
+            name="numberOfCards"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Cards*</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="1" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SelectItem key={num} value={String(num)}>
+                        {num}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Card type */}
+          <FormField
+            name="cardType"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Card type*</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Card type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {cardTypes.map((type) => (
+                      <SelectItem key={type} value={type.toLowerCase()}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </>
+      )}
+
+      {/* Do you have any Rental Income? */}
+      <FormField
+        name="hasRentalIncome"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem className="space-y-3">
+            <FormLabel>Do you have any Rental Income?</FormLabel>
+            <FormControl>
+              <RadioGroup
+                onValueChange={field.onChange}
+                value={field.value}
+                className="flex flex-row space-x-4"
+              >
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <RadioGroupItem value="yes" />
+                  </FormControl>
+                  <FormLabel className="font-normal">Yes</FormLabel>
+                </FormItem>
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <RadioGroupItem value="no" />
+                  </FormControl>
+                  <FormLabel className="font-normal">No</FormLabel>
+                </FormItem>
+              </RadioGroup>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* If user has rental income, ask for details */}
+      {form.watch("hasRentalIncome") === "yes" && (
+        <>
+          <FormField
+            name="rentalArea"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Rental Property Area</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g., Dhaka, Mirpur"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="rentalIncome"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Monthly Rental Income (BDT)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </>
+      )}
+    </div>
+  )
+
+  const renderStep3 = () => (
+    <div className="space-y-4">
+      {/* Name */}
+      <FormField
+        name="name"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Your Name*</FormLabel>
+            <FormControl>
+              <Input placeholder="Enter your name" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Email */}
+      <FormField
+        name="email"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Your Email Address*</FormLabel>
+            <FormControl>
+              <Input placeholder="Enter your email address" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Phone */}
+      <FormField
+        name="phone"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Your Phone Number*</FormLabel>
+            <FormControl>
+              <Input placeholder="+880" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Terms Accepted */}
+      <FormField
+        name="termsAccepted"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <div className="space-y-1 leading-none">
+              <FormLabel>
+                By Clicking <b>Submit</b> Below You Agree to Our{" "}
+                <a href="#" className="text-primary hover:underline">
+                  Terms &amp; Conditions
+                </a>
+              </FormLabel>
+            </div>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  )
+
+  const renderStepIndicator = () => {
+    const stepPercentage = ((step - 1) / 2) * 100
+    return (
+      <div className="relative mb-8">
+        {/* Background line */}
+        <div className="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 bg-gray-200 dark:bg-gray-700">
+          <div
+            className="h-full bg-green-500 transition-all duration-300"
+            style={{ width: `${stepPercentage}%` }}
+          />
+        </div>
+
+        {/* Circles */}
+        <div className="relative z-10 flex justify-between">
+          {[1, 2, 3].map((stepNumber) => (
+            <div
+              key={stepNumber}
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-full border-2",
+                stepNumber < step
+                  ? "border-green-500 bg-green-500 text-white"
+                  : stepNumber === step
+                    ? "border-green-500"
+                    : "border-gray-200"
+              )}
+            >
+              {stepNumber < step ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <span>{stepNumber}</span>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Labels */}
+        <div className="mt-2 flex justify-between text-sm">
+          <span
+            className={cn(
+              step >= 1 ? "text-green-600 font-medium" : "text-gray-500"
+            )}
+          >
+            Step 1
+          </span>
+          <span
+            className={cn(
+              step >= 2 ? "text-green-600 font-medium" : "text-gray-500"
+            )}
+          >
+            Step 2
+          </span>
+          <span
+            className={cn(
+              step >= 3 ? "text-green-600 font-medium" : "text-gray-500"
+            )}
+          >
+            Step 3
+          </span>
+        </div>
+      </div>
+    )
+  }
 
   const handleNext = async () => {
-    let isValid = false
-    switch (currentStep) {
-      case 1:
-        isValid = await trigger([
-          "gender",
-          // "dateOfBirth",
-          "profession",
-          "jobLocation",
-          "monthlyIncome",
-          "loanTenure"
-        ], { shouldFocus: true })
-        break
-      case 2:
-        const fields = ["hasExistingLoan", "hasCreditCard"]
-        if (watch("hasExistingLoan")) fields.push("numberOfLoans", "loanType", "outstandingAmount", "emiAmount", "interestRate")
-        if (watch("hasCreditCard")) fields.push("numberOfCards", "cardLimit", "cardType")
-        isValid = await trigger(fields as any, { shouldFocus: true })
-        break
-      case 3:
-        isValid = await trigger(["name", "email"], { shouldFocus: true })
-        break
-    }
-    if (isValid) setCurrentStep(prev => prev + 1)
-  }
+    // Validate *only* the fields relevant to the current step.
+    // If valid, proceed. If not, show errors.
+    let fieldsToValidate: (keyof z.infer<typeof formSchema>)[] = []
 
-  const onSubmit = async (data: EligibilityFormData) => {
-    setIsSubmitting(true)
-
-    try {
-      const submissionData = {
-        ...data,
-        dateOfBirth: format(data.dateOfBirth, "yyyy-MM-dd"),
-        loanType,
+    if (step === 1) {
+      fieldsToValidate = [
+        "gender",
+        "dateOfBirth",
+        "profession",
+        "monthlyIncome",
+        "loanTenure",
+      ]
+      if (form.watch("profession") === "business owner") {
+        fieldsToValidate.push(
+          "businessOwnerType",
+          "businessType",
+          "sharePortion",
+          "tradeLicenseAge"
+        )
       }
-      console.log(submissionData)
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+    } else if (step === 2) {
+      fieldsToValidate = ["hasLoan", "hasCreditCard", "hasRentalIncome"]
+      if (form.watch("hasLoan") === "yes") {
+        fieldsToValidate.push("numberOfLoans", "loanType")
+      }
+      if (form.watch("hasCreditCard") === "yes") {
+        fieldsToValidate.push("numberOfCards", "cardType")
+      }
+      if (form.watch("hasRentalIncome") === "yes") {
+        fieldsToValidate.push("rentalArea", "rentalIncome")
+      }
+    }
 
-      toast.success("Application submitted successfully!")
-      sessionStorage.setItem('eligibilityData', JSON.stringify(submissionData));
-      router.push('/eligiblity');
-
-      onOpenChange(false)
-      setCurrentStep(1)
-      reset()
-
-    } catch (error) {
-      console.error("Submission error:", error)
-      toast.error("Submission failed. Please try again.")
-    } finally {
-      setIsSubmitting(false)
+    const isValid = await form.trigger(fieldsToValidate)
+    if (isValid) {
+      // Move to next step
+      setStep((prev) => prev + 1)
     }
   }
 
-  const handleBack = () => currentStep > 1 ? setCurrentStep(prev => prev - 1) : onOpenChange(false)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="max-w-2xl rounded-lg">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Find the best {loanType} for you</DialogTitle>
-          <DialogDescription asChild>
-            <div className="space-y-2 mt-4">
-              <Progress value={(currentStep / 3) * 100} className="h-2" />
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Step {currentStep} of 3</span>
-                <span>{loanType} Application</span>
-              </div>
-            </div>
+          <DialogTitle>Are you absolutely sure?</DialogTitle>
+          <DialogDescription>
+            This action cannot be undone. This will permanently delete your account
+            and remove your data from our servers.
           </DialogDescription>
+          <ScrollArea className="max-h-96">
+            <Card className="w-full p-6 border-none shadow-none">
+              {/* Close button (top-right) */}
+              <div className="flex justify-between items-center mb-6">
+                <h1 className="text-xl font-semibold text-gray-800">
+                  Find the best Personal Loan for you
+                </h1>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
+                  onClick={() => onOpenChange(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Step Indicator */}
+              {renderStepIndicator()}
+
+              {/* Form Body */}
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  {step === 1 && renderStep1()}
+                  {step === 2 && renderStep2()}
+                  {step === 3 && renderStep3()}
+
+                  <div className="flex justify-between pt-4">
+                    {/* Back Button */}
+                    {step > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setStep((prev) => prev - 1)}
+                      >
+                        Back
+                      </Button>
+                    )}
+                    {/* Next or Submit */}
+                    {step < 3 ? (
+                      <Button type="button" onClick={handleNext}>
+                        Continue
+                      </Button>
+                    ) : (
+                      <Button type="submit">Submit</Button>
+                    )}
+                  </div>
+                </form>
+              </Form>
+            </Card>
+          </ScrollArea>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Step 1 - Personal Information */}
-          {currentStep === 1 && (
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Gender</Label>
-                  <Select
-                    onValueChange={v => setValue("gender", v as any)}
-                    value={watch("gender")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Your Gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="MALE">Male</SelectItem>
-                      <SelectItem value="FEMALE">Female</SelectItem>
-                      <SelectItem value="OTHER">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.gender && <div className="text-sm text-red-500">{errors.gender.message}</div>}
-                </div>
 
-                {/* <div className="space-y-2">
-                  <Label>Date of Birth</Label>
-                  <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          errors.dateOfBirth && "border-red-500",
-                          !watch("dateOfBirth") && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {watch("dateOfBirth") ? (
-                          format(watch("dateOfBirth"), "dd/MM/yyyy")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={watch("dateOfBirth")}
-                        onSelect={(date) => {
-                          if (date) {
-                            setValue("dateOfBirth", date)
-                            trigger("dateOfBirth")
-                            setCalendarOpen(false)
-                          }
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  {errors.dateOfBirth && <div className="text-sm text-red-500">{errors.dateOfBirth.message}</div>}
-                </div> */}
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Profession</Label>
-                  <Select
-                    onValueChange={v => setValue("profession", v as any)}
-                    value={watch("profession")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Profession" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="SALARIED">Salaried</SelectItem>
-                      <SelectItem value="BUSINESS">Business</SelectItem>
-                      <SelectItem value="OTHERS">Others</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.profession && <div className="text-sm text-red-500">{errors.profession.message}</div>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Job Location</Label>
-                  <Select
-                    onValueChange={v => setValue("jobLocation", v as any)}
-                    value={watch("jobLocation")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Area" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="DHAKA">Dhaka</SelectItem>
-                      <SelectItem value="CHITTAGONG">Chittagong</SelectItem>
-                      <SelectItem value="OTHER">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.jobLocation && <div className="text-sm text-red-500">{errors.jobLocation.message}</div>}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Monthly Income (BDT)</Label>
-                  <Input
-                    type="number"
-                    placeholder="00"
-                    {...register("monthlyIncome", { valueAsNumber: true })}
-                    onChange={e => setValue("monthlyIncome", Number(e.target.value))}
-                  />
-                  {errors.monthlyIncome && <div className="text-sm text-red-500">{errors.monthlyIncome.message}</div>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Loan Tenure (Months)</Label>
-                  <Input
-                    type="number"
-                    placeholder="00"
-                    {...register("loanTenure", { valueAsNumber: true })}
-                    onChange={e => setValue("loanTenure", Number(e.target.value))}
-                  />
-                  {errors.loanTenure && <div className="text-sm text-red-500">{errors.loanTenure.message}</div>}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Step 2 - Financial Information */}
-          {currentStep === 2 && (
-            <div className="space-y-6 py-4">
-              <div className="space-y-4">
-                <div className="space-y-4">
-                  <RadioGroup
-                    value={watch("hasExistingLoan")?.toString()}
-                    onValueChange={v => setValue("hasExistingLoan", v === "true")}
-                  >
-                    <Label className="text-base">Do you have any existing loan?</Label>
-                    <div className="flex items-center space-x-4 mt-2">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="true" id="loan-yes" />
-                        <Label htmlFor="loan-yes">Yes</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="false" id="loan-no" />
-                        <Label htmlFor="loan-no">No</Label>
-                      </div>
-                    </div>
-                  </RadioGroup>
-
-                  {watch("hasExistingLoan") && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Number of Loan*</Label>
-                        <Input
-                          type="number"
-                          {...register("numberOfLoans", { valueAsNumber: true })}
-                        />
-                        {errors.numberOfLoans && <div className="text-sm text-red-500">{errors.numberOfLoans.message}</div>}
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Loan Type*</Label>
-                        <Select
-                          onValueChange={v => setValue("loanType", v)}
-                          value={watch("loanType")}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select loan type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="personal">Personal Loan</SelectItem>
-                            <SelectItem value="home">Home Loan</SelectItem>
-                            <SelectItem value="car">Car Loan</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        {errors.loanType && <div className="text-sm text-red-500">{errors.loanType.message}</div>}
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Loan Outstanding*</Label>
-                        <Input
-                          type="number"
-                          {...register("outstandingAmount", { valueAsNumber: true })}
-                        />
-                        {errors.outstandingAmount && <div className="text-sm text-red-500">{errors.outstandingAmount.message}</div>}
-                      </div>
-                      <div className="space-y-2">
-                        <Label>EMI Amount (BDT)*</Label>
-                        <Input
-                          type="number"
-                          {...register("emiAmount", { valueAsNumber: true })}
-                        />
-                        {errors.emiAmount && <div className="text-sm text-red-500">{errors.emiAmount.message}</div>}
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Interest Rate*</Label>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          {...register("interestRate", { valueAsNumber: true })}
-                        />
-                        {errors.interestRate && <div className="text-sm text-red-500">{errors.interestRate.message}</div>}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-4">
-                  <RadioGroup
-                    value={watch("hasCreditCard")?.toString()}
-                    onValueChange={v => setValue("hasCreditCard", v === "true")}
-                  >
-                    <Label className="text-base">Do you have any Credit Card?</Label>
-                    <div className="flex items-center space-x-4 mt-2">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="true" id="card-yes" />
-                        <Label htmlFor="card-yes">Yes</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="false" id="card-no" />
-                        <Label htmlFor="card-no">No</Label>
-                      </div>
-                    </div>
-                  </RadioGroup>
-
-                  {watch("hasCreditCard") && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Number of Cards*</Label>
-                        <Input
-                          type="number"
-                          {...register("numberOfCards", { valueAsNumber: true })}
-                        />
-                        {errors.numberOfCards && <div className="text-sm text-red-500">{errors.numberOfCards.message}</div>}
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Card Limit (BDT)*</Label>
-                        <Input
-                          type="number"
-                          {...register("cardLimit", { valueAsNumber: true })}
-                        />
-                        {errors.cardLimit && <div className="text-sm text-red-500">{errors.cardLimit.message}</div>}
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Card Type*</Label>
-                        <Select
-                          onValueChange={v => setValue("cardType", v)}
-                          value={watch("cardType")}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select card type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="visa">Visa</SelectItem>
-                            <SelectItem value="mastercard">Mastercard</SelectItem>
-                            <SelectItem value="amex">American Express</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        {errors.cardType && <div className="text-sm text-red-500">{errors.cardType.message}</div>}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3 - Email & Review */}
-          {currentStep === 3 && (
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label>Your Name</Label>
-                <Input
-                  type="text"
-                  placeholder="Enter your name"
-                  {...register("name")}
-                />
-                {errors.name && <div className="text-sm text-red-500">{errors.name.message}</div>}
-              </div>
-              <div className="space-y-2">
-                <Label>Email Address</Label>
-                <Input
-                  type="email"
-                  placeholder="Enter your email address"
-                  {...register("email")}
-                />
-                {errors.email && <div className="text-sm text-red-500">{errors.email.message}</div>}
-              </div>
-            </div>
-          )}
-
-          <DialogFooter className="mt-6">
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              type="button"
-              disabled={isSubmitting}
-            >
-              {currentStep === 1 ? "Cancel" : "Back"}
-            </Button>
-            <Button
-              type={currentStep === 3 ? "submit" : "button"}
-              onClick={currentStep === 3 ? undefined : handleNext}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Processing...
-                </div>
-              ) : currentStep === 3 ? "Submit Application" : "Next"}
-            </Button>
-          </DialogFooter>
-        </form>
       </DialogContent>
     </Dialog>
   )

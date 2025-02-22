@@ -5,10 +5,14 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { EligibilityModal } from "@/components/modules/eligiblity/EligibilityModal"
+
 import { toast } from "sonner"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
 import { Terminal } from "lucide-react"
+import EligiblityCheck from "../modules/eligiblity/EligibilityModal"
+
+
+
 
 function EligiblityPage() {
     // Track the selected loan type
@@ -168,7 +172,7 @@ function EligiblityPage() {
                     </div>
                 </Tabs>
             </div>
-            <EligibilityModal
+            <EligiblityCheck
                 open={openEligibility}
                 onOpenChange={setOpenEligibility} // pass setState so the modal can close itself
                 loanType={loanType}
