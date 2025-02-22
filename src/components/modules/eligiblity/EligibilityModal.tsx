@@ -1,14 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { CalendarIcon, Check, X } from "lucide-react"
-import { format } from "date-fns"
+import { Check, X } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -20,11 +18,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Select,
@@ -45,6 +38,7 @@ import {
 } from "@/components/ui/dialog"
 import { formSchema } from "./eligiblityValidation"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useRouter } from "next/navigation"
 
 interface EligibilityCheckProps {
   open: boolean
@@ -63,15 +57,14 @@ export default function EligiblityCheck({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      gender: "",
-      dateOfBirth: undefined,
-      profession: "",
+      gender: "MALE",
+      profession: "Salaried",
       businessOwnerType: "",
       businessType: "",
       sharePortion: "",
       tradeLicenseAge: "",
-      monthlyIncome: "",
-      loanTenure: "",
+      monthlyIncome: "12000",
+      loanTenure: "12",
       hasLoan: "no",
       numberOfLoans: "",
       loanType: "",
@@ -81,7 +74,6 @@ export default function EligiblityCheck({
       hasRentalIncome: "no",
       rentalArea: "",
       rentalIncome: "",
-      // Contact Info
       name: "shamim",
       email: "shamim@gmail.com",
       phone: "01910479167",
@@ -89,22 +81,77 @@ export default function EligiblityCheck({
     },
   })
 
+  const [dob, setDob] = React.useState<Date | null>(null);
+  const router = useRouter()
+
+  // console.log(dob)
   // Sample data arrays
-  const professions = ["Salaried", "Business Owner"]
+  const professions = ["Salaried", "Business owner"]
+  const jobLocation = ["dhaka"]
   const loanTypes = ["Personal", "Home", "Car", "Education"]
-  const cardTypes = ["Credit", "Debit", "Prepaid"]
+  const cardTypes = ["CREDIT_CARDS", "DABIT_CARDS"]
   // For the tradeLicenseAge, you can dynamically generate or define as needed
   const tradeLicenseYears = Array.from({ length: 10 }, (_, i) => i + 1)
 
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form submitted with:", values)
+
+    const eligibilityData = {
+      ...values,
+      dateOfBirth: dob,
+      loanTypesMain: loanType
+    }
+
+    console.log("Form submitted with:", eligibilityData)
     // TODO: Place your API call or final submission logic here
     // onOpenChange(false) // close the modal after successful submission
+    router.push('/eligiblity')
   }
 
+  const handleNext = async () => {
+    // Validate *only* the fields relevant to the current step.
+    // If valid, proceed. If not, show errors.
+    let fieldsToValidate: (keyof z.infer<typeof formSchema>)[] = []
 
+    if (step === 1) {
+      fieldsToValidate = [
+        "gender",
+        "profession",
+        "monthlyIncome",
+        "loanTenure",
+      ]
+      if (form.watch("profession") === "business owner") {
+        fieldsToValidate.push(
+          "businessOwnerType",
+          "businessType",
+          "sharePortion",
+          "tradeLicenseAge"
+        )
+      }
+    } else if (step === 2) {
+      fieldsToValidate = ["hasLoan", "hasCreditCard", "hasRentalIncome"]
+      if (form.watch("hasLoan") === "yes") {
+        fieldsToValidate.push("numberOfLoans", "loanType")
+      }
+      if (form.watch("hasCreditCard") === "yes") {
+        fieldsToValidate.push("numberOfCards", "cardType")
+      }
+      if (form.watch("hasRentalIncome") === "yes") {
+        fieldsToValidate.push("rentalArea", "rentalIncome")
+      }
+    }
 
+    const isValid = await form.trigger(fieldsToValidate)
+    if (isValid) {
+      // Move to next step
+      setStep((prev) => prev + 1)
+    }
+  }
+
+  const handleDateChange = (e: any) => {
+    const selectedDate = new Date(e.target.value);
+    setDob(selectedDate);
+  };
 
 
   const renderStep1 = () => (
@@ -126,9 +173,9 @@ export default function EligiblityCheck({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+                <SelectItem value="MALE">Male</SelectItem>
+                <SelectItem value="FEMALE">Female</SelectItem>
+                <SelectItem value="OTHER">Other</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
@@ -137,7 +184,7 @@ export default function EligiblityCheck({
       />
 
       {/* Date of Birth */}
-      <FormField
+      {/* <FormField
         name="dateOfBirth"
         control={form.control}
         render={({ field }) => (
@@ -175,7 +222,17 @@ export default function EligiblityCheck({
             <FormMessage />
           </FormItem>
         )}
-      />
+      /> */}
+      <div>
+        <div>Date of birth</div>
+        <input
+          onChange={handleDateChange}
+          className="w-full border py-1 rounded-lg px-2"
+          type="date"
+          placeholder="date of birth"
+        />
+      </div>
+
 
       {/* Profession */}
       <FormField
@@ -317,6 +374,37 @@ export default function EligiblityCheck({
           />
         </>
       )}
+
+      <FormField
+        name="jobLocation"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Job Location</FormLabel>
+            <Select
+              onValueChange={(val) => field.onChange(val)}
+              value={field.value}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Job Location" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {jobLocation.map((profession) => (
+                  <SelectItem
+                    key={profession}
+                    value={profession.toLowerCase()}
+                  >
+                    {profession}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       {/* Monthly Income */}
       <FormField
@@ -691,140 +779,101 @@ export default function EligiblityCheck({
   )
 
   const renderStepIndicator = () => {
-    const stepPercentage = ((step - 1) / 2) * 100
+    const stepPercentage = ((step - 1) / 2) * 100;
     return (
       <div className="relative mb-8">
-        {/* Background line */}
-        <div className="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 bg-gray-200 dark:bg-gray-700">
+        {/* Animated background line */}
+        <div className="absolute left-0 top-1/2 h-[4px] w-full -translate-y-1/2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-green-500 transition-all duration-300"
+            className="h-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-500 ease-out"
             style={{ width: `${stepPercentage}%` }}
           />
         </div>
 
-        {/* Circles */}
+        {/* Interactive circles */}
         <div className="relative z-10 flex justify-between">
-          {[1, 2, 3].map((stepNumber) => (
-            <div
-              key={stepNumber}
-              className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-full border-2",
-                stepNumber < step
-                  ? "border-green-500 bg-green-500 text-white"
-                  : stepNumber === step
-                    ? "border-green-500"
-                    : "border-gray-200"
-              )}
-            >
-              {stepNumber < step ? (
-                <Check className="h-4 w-4" />
-              ) : (
-                <span>{stepNumber}</span>
-              )}
-            </div>
-          ))}
+          {[1, 2, 3].map((stepNumber) => {
+            const isCompleted = stepNumber < step;
+            const isCurrent = stepNumber === step;
+
+            return (
+              <div
+                key={stepNumber}
+                className="relative flex flex-col items-center group"
+              >
+                <div
+                  className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all duration-300 transform",
+                    isCompleted && "border-emerald-500 bg-emerald-500 scale-110",
+                    isCurrent && "border-emerald-500 bg-white dark:bg-gray-900 scale-125 shadow-lg",
+                    !isCompleted && !isCurrent && "border-gray-300 bg-white dark:bg-gray-800 hover:border-emerald-300 "
+                  )}
+                >
+                  {isCompleted ? (
+                    <Check className="h-5 w-5 text-white animate-check-in" />
+                  ) : (
+                    <span className={cn(
+                      "font-semibold transition-colors",
+                      isCurrent ? "text-emerald-600 dark:text-emerald-400" : "text-gray-400"
+                    )}>
+                      {stepNumber}
+                    </span>
+                  )}
+                </div>
+
+                {/* Hover effect glow */}
+                {isCurrent && (
+                  <div className="absolute inset-0 rounded-full animate-pulse bg-emerald-500/20 blur-md" />
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Labels */}
-        <div className="mt-2 flex justify-between text-sm">
-          <span
-            className={cn(
-              step >= 1 ? "text-green-600 font-medium" : "text-gray-500"
-            )}
-          >
-            Step 1
-          </span>
-          <span
-            className={cn(
-              step >= 2 ? "text-green-600 font-medium" : "text-gray-500"
-            )}
-          >
-            Step 2
-          </span>
-          <span
-            className={cn(
-              step >= 3 ? "text-green-600 font-medium" : "text-gray-500"
-            )}
-          >
-            Step 3
-          </span>
+        {/* Enhanced labels with descriptions */}
+        <div className="mt-6 grid grid-cols-3 text-center gap-4">
+          <div className={cn(
+            "space-y-1 transition-opacity",
+            step >= 1 ? "opacity-100" : "opacity-50"
+          )}>
+            <span className="block text-sm font-medium text-emerald-600">Step 1</span>
+            <span className="block text-xs text-gray-500">Personal Info</span>
+          </div>
+          <div className={cn(
+            "space-y-1 transition-opacity",
+            step >= 2 ? "opacity-100" : "opacity-50"
+          )}>
+            <span className="block text-sm font-medium text-emerald-600">Step 2</span>
+            <span className="block text-xs text-gray-500">Financial Details</span>
+          </div>
+          <div className={cn(
+            "space-y-1 transition-opacity",
+            step >= 3 ? "opacity-100" : "opacity-50"
+          )}>
+            <span className="block text-sm font-medium text-emerald-600">Step 3</span>
+            <span className="block text-xs text-gray-500">Contact Info</span>
+          </div>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
-  const handleNext = async () => {
-    // Validate *only* the fields relevant to the current step.
-    // If valid, proceed. If not, show errors.
-    let fieldsToValidate: (keyof z.infer<typeof formSchema>)[] = []
 
-    if (step === 1) {
-      fieldsToValidate = [
-        "gender",
-        "dateOfBirth",
-        "profession",
-        "monthlyIncome",
-        "loanTenure",
-      ]
-      if (form.watch("profession") === "business owner") {
-        fieldsToValidate.push(
-          "businessOwnerType",
-          "businessType",
-          "sharePortion",
-          "tradeLicenseAge"
-        )
-      }
-    } else if (step === 2) {
-      fieldsToValidate = ["hasLoan", "hasCreditCard", "hasRentalIncome"]
-      if (form.watch("hasLoan") === "yes") {
-        fieldsToValidate.push("numberOfLoans", "loanType")
-      }
-      if (form.watch("hasCreditCard") === "yes") {
-        fieldsToValidate.push("numberOfCards", "cardType")
-      }
-      if (form.watch("hasRentalIncome") === "yes") {
-        fieldsToValidate.push("rentalArea", "rentalIncome")
-      }
-    }
-
-    const isValid = await form.trigger(fieldsToValidate)
-    if (isValid) {
-      // Move to next step
-      setStep((prev) => prev + 1)
-    }
-  }
 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl rounded-lg">
         <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
+          <DialogTitle className="text-center">Find the best Personal Loan for you</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your account
-            and remove your data from our servers.
+            Make changes to your profile here. Click save when you're done.
           </DialogDescription>
+          <div className="px-10 mt-8">
+            {renderStepIndicator()}
+          </div>
           <ScrollArea className="max-h-96">
             <Card className="w-full p-6 border-none shadow-none">
-              {/* Close button (top-right) */}
-              <div className="flex justify-between items-center mb-6">
-                <h1 className="text-xl font-semibold text-gray-800">
-                  Find the best Personal Loan for you
-                </h1>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full"
-                  onClick={() => onOpenChange(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-
-              {/* Step Indicator */}
-              {renderStepIndicator()}
-
-              {/* Form Body */}
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   {step === 1 && renderStep1()}
@@ -843,22 +892,19 @@ export default function EligiblityCheck({
                       </Button>
                     )}
                     {/* Next or Submit */}
-                    {step < 3 ? (
+                    {step < 4 ? (
                       <Button type="button" onClick={handleNext}>
                         Continue
                       </Button>
-                    ) : (
-                      <Button type="submit">Submit</Button>
-                    )}
+                    ) :
+                      <Button type="submit">Check Eligiblity</Button>
+                    }
                   </div>
                 </form>
               </Form>
             </Card>
           </ScrollArea>
         </DialogHeader>
-
-
-
       </DialogContent>
     </Dialog>
   )

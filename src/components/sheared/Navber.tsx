@@ -141,7 +141,7 @@ export default function Navbar() {
           {/* Right Section */}
           <div className="flex items-center gap-4">
             <Button variant="ghost" className="hidden md:flex gap-2" asChild>
-              <Link href="/application/track-application">
+              <Link href="/track-application">
                 <Globe className="h-4 w-4" />
                 Track Application
               </Link>
@@ -212,7 +212,7 @@ export default function Navbar() {
                     </div>
                   ))}
                   <Button variant="outline" className="w-full mt-4 gap-2" asChild>
-                    <Link href="/application">
+                    <Link href="/track-application">
                       <Globe className="h-4 w-4" />
                       Track Application
                     </Link>

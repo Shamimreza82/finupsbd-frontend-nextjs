@@ -4,9 +4,6 @@ export const formSchema = z.object({
   gender: z.string({
     required_error: "Please select a gender.",
   }),
-  dateOfBirth: z.date({
-    required_error: "Please select a date of birth.",
-  }),
   profession: z.string({
     required_error: "Please select a profession.",
   }),
@@ -40,6 +37,7 @@ export const formSchema = z.object({
     })
     .min(1, { message: "Loan tenure must be greater than 0." }),
   hasLoan: z.string().optional(),
+  jobLocation: z.string().optional(), 
   numberOfLoans: z.string().optional(),
   loanType: z.string().optional(),
   hasCreditCard: z.string().optional(),
