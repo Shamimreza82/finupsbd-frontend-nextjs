@@ -16,13 +16,14 @@ export const middleware = async (request: NextRequest) => {
     console.log({pathname})
     const userInfo = await getCurrentUser()
 
+    console.log({userInfo})
+
     if (!userInfo) {
         if (authRoutes.includes(pathname)) {
             return NextResponse.next()
         } else {
             return NextResponse.redirect(new URL(`http://localhost:3000/login?redirectPath=${pathname}`, request.url))
         }
-
     } 
 
     // if(userInfo?.role && roleBasedPrivateRoutes[userInfo?.role as Role]){

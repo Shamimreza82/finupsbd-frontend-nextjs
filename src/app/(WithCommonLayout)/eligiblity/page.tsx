@@ -16,7 +16,7 @@ const EligiblityPage = () => {
     }
   }, []);
 
-  if (!submissionData) return <div><LoadingComponent/></div>;
+  // if (!submissionData) return <div><LoadingComponent/></div>;
   
   console.log(submissionData)
   
