@@ -86,9 +86,9 @@ export default function EligiblityCheck({
 
   // console.log(dob)
   // Sample data arrays
-  const professions = ["Salaried", "Business owner"]
-  const jobLocation = ["dhaka"]
-  const loanTypes = ["Personal", "Home", "Car", "Education"]
+  const professions = ["SALARIED", "BUSINESS OWNER"]
+  const jobLocation = ["DHAKA"]
+  const loanTypes = ["PERSONAL_LOAN", "HOME_LOAN", "CAR_LOAN", "SME_LOAN"]
   const cardTypes = ["CREDIT_CARDS", "DABIT_CARDS"]
   // For the tradeLicenseAge, you can dynamically generate or define as needed
   const tradeLicenseYears = Array.from({ length: 10 }, (_, i) => i + 1)
@@ -105,6 +105,9 @@ export default function EligiblityCheck({
     console.log("Form submitted with:", eligibilityData)
     // TODO: Place your API call or final submission logic here
     // onOpenChange(false) // close the modal after successful submission
+
+    sessionStorage.setItem('sessionStorage', JSON.stringify(eligibilityData));
+
     router.push('/eligiblity')
   }
 
@@ -368,7 +371,7 @@ export default function EligiblityCheck({
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage />
+                <FormMessage />  
               </FormItem>
             )}
           />

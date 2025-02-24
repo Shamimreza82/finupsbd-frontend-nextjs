@@ -37,7 +37,7 @@ export const formSchema = z.object({
     })
     .min(1, { message: "Loan tenure must be greater than 0." }),
   hasLoan: z.string().optional(),
-  jobLocation: z.string().optional(), 
+  jobLocation: z.string().optional(),
   numberOfLoans: z.string().optional(),
   loanType: z.string().optional(),
   hasCreditCard: z.string().optional(),

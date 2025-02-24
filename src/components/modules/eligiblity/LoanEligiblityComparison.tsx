@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import {  useState } from "react"
 import { Heart } from "lucide-react"
 import Image from "next/image"
 import { Slider } from "@/components/ui/slider"
@@ -9,22 +9,24 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { useRouter } from "next/navigation"
+
 
 // Format number to BDT format
 const formatBDT = (amount: number) => {
     return new Intl.NumberFormat("en-IN").format(amount)
 }
 
-export default function LoanComparison({ submissionData }: { submissionData: any }) {
+export default function LoanEligiblityComparison({submissionData}: {submissionData: any}) {
     const [loanAmount, setLoanAmount] = useState(500000)
     const [profitRate, setProfitRate] = useState(12)
     const [selectedBanks, setSelectedBanks] = useState<string[]>([])
     const [wishlist, setWishlist] = useState<number[]>([])
+    const router = useRouter()
 
 
-    console.log({ loanAmount }, { profitRate }, { selectedBanks }, { wishlist })
+    // console.log({ loanAmount }, { profitRate }, { selectedBanks }, { wishlist })
     console.log(submissionData)
-
 
     const banks = [
         "Standard Chartered",
@@ -39,6 +41,13 @@ export default function LoanComparison({ submissionData }: { submissionData: any
 
     const handleWishlist = (id: number) => {
         setWishlist((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
+    }
+
+
+    const handelApplication = (ApplyId: string) =>{
+            console.log(ApplyId)
+
+            router.push(`/user/loan-application?applicationId=${ApplyId}`)
     }
 
     return (
@@ -139,7 +148,7 @@ export default function LoanComparison({ submissionData }: { submissionData: any
 
                     {/* Loan Cards */}
                     <div className="space-y-4">
-                        {[1, 2].map((index) => (
+                        {[1].map((index) => (
                             <Card key={index} className="hover:shadow-lg transition-shadow">
                                 <CardContent className="p-6">
                                     <div className="flex flex-col lg:flex-row gap-6">
@@ -164,7 +173,7 @@ export default function LoanComparison({ submissionData }: { submissionData: any
                                                                 30% Cashback on Interest Rate
                                                             </Badge>
                                                         </div>
-                                                    </div>
+                                                    </div> 
                                                 </div>
                                                 <Button
                                                     variant="ghost"
@@ -265,7 +274,7 @@ export default function LoanComparison({ submissionData }: { submissionData: any
                                                 <div className="text-sm">Eligible Loan</div>
                                                 <div className="text-xl font-bold">BDT {formatBDT(2000000)}</div>
                                             </div>
-                                            <Button className="w-full bg-primary hover:bg-primary/90">Apply Now</Button>
+                                                <Button onClick={() => handelApplication("1")} className="w-full bg-primary hover:bg-primary/90">Apply Now</Button>
                                             <Button
                                                 variant="outline"
                                                 className="w-full border-primary text-primary hover:bg-primary hover:text-white"

@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, Globe, LogIn, LogOut } from "lucide-react";
+import { Menu, Globe, LogIn, LogOut, Package, Bookmark, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -25,56 +25,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { logout } from "@/services/AuthService";
 import { protechedRoute } from "@/contants";
 import { usePathname, useRouter } from "next/navigation";
+import { navItems } from "./navberConstant";
 
 
-const navItems = [
-  {
-    title: "Loans",
-    href: "#",
-    items: [
-      { name: "Personal Loan", href: "/loans/personal" },
-      { name: "Home Loan", href: "/loans/home" },
-      { name: "Education Loan", href: "/loans/education" },
-      { name: "Business Loan", href: "/loans/business" },
-    ],
-  },
-  {
-    title: "Cards",
-    href: "#",
-    items: [
-      { name: "Credit Cards", href: "/cards/credit" },
-      { name: "Debit Cards", href: "/cards/debit" },
-      { name: "Prepaid Cards", href: "/cards/prepaid" },
-    ],
-  },
-  {
-    title: "Other Products",
-    href: "#",
-    items: [
-      { name: "Insurance", href: "/products/insurance" },
-      { name: "Investment", href: "/products/investment" },
-      { name: "Savings Accounts", href: "/products/savings" },
-    ],
-  },
-  {
-    title: "FinUps Islamic",
-    href: "#",
-    items: [
-      { name: "Islamic Banking", href: "/islamic-banking" },
-      { name: "Shariah-Compliant Loans", href: "/islamic-banking/loans" },
-      { name: "Zakat Calculator", href: "/islamic-banking/zakat-calculator" },
-    ],
-  },
-];
+
+
 
 export default function Navbar() {
-  const [hoveredMenu, setHoveredMenu] = useState<string | null>(); // Track hovered menu
+  const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname()
   const router = useRouter()
-
   const { user, setIsLoading } = useUser()
-
 
   const handleLogOut = () => {
     logout()
@@ -86,10 +48,9 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-sm">
-      <div>
-        <div className="flex container mx-auto justify-between h-16 items-center px-4">
-          <div className="flex items-center justify-center gap-12">
-            {/* Logo Section */}
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between h-16 items-center">
+          <div className="flex items-center gap-12">
             <Link href="/" className="flex items-center space-x-2">
               <Image
                 src="/logo.png"
@@ -102,32 +63,46 @@ export default function Navbar() {
                 Finups <span className="text-green-600">bd</span>
               </span>
             </Link>
-
-            {/* Desktop Navigation */}
+          {/* dextop navber */}
             <div className="hidden md:flex items-center gap-6">
               {navItems.map((item) => (
                 <div
                   key={item.title}
-                  className="relative"
+                  className="relative group"
                   onMouseEnter={() => setHoveredMenu(item.title)}
                   onMouseLeave={() => setHoveredMenu(null)}
                 >
                   <Link
                     href={item.href}
-                    className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-green-600 focus-visible:outline-none"
+                    className="flex items-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-green-600 transition-colors duration-200 rounded-lg hover:bg-gray-50"
                   >
+                    {item.icon && <item.icon className="w-5 h-5" />}
                     {item.title}
+                    {item.items && (
+                      <ChevronDown className="w-4 h-4 ml-1 transition-transform duration-200 group-hover:rotate-180" />
+                    )}
                   </Link>
-                  {hoveredMenu === item.title && (
-                    <div className="absolute left-0 w-48 bg-white border shadow-md rounded-md z-50">
-                      {/* Added z-50 */}
+
+                  {item.items && (
+                    <div className={`absolute left-0 top-full w-48 bg-white border border-gray-100 shadow-lg rounded-lg transition-all duration-300 origin-top
+                      ${hoveredMenu === item.title ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
                       {item.items.map((subItem) => (
                         <Link
                           key={subItem.name}
                           href={subItem.href}
-                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 transition-colors duration-200 group/subitem"
                         >
-                          {subItem.name}
+                          {subItem.icon && (
+                            <subItem.icon className="w-5 h-5 text-green-600 group-hover/subitem:text-green-700" />
+                          )}
+                          <div>
+                            <span className="block text-sm">{subItem.name}</span>
+                            {subItem.description && (
+                              <span className="block text-xs text-gray-500 mt-0.5">
+                                {subItem.description}
+                              </span>
+                            )}
+                          </div>
                         </Link>
                       ))}
                     </div>
@@ -135,10 +110,8 @@ export default function Navbar() {
                 </div>
               ))}
             </div>
-
           </div>
 
-          {/* Right Section */}
           <div className="flex items-center gap-4">
             <Button variant="ghost" className="hidden md:flex gap-2" asChild>
               <Link href="/track-application">
@@ -147,39 +120,58 @@ export default function Navbar() {
               </Link>
             </Button>
 
-            {user ? <DropdownMenu>
-              <DropdownMenuTrigger>
-                <div className="flex items-center justify-center gap-2">
-                  <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>User</AvatarFallback>
-                  </Avatar>
-                  <h2 className="font-bold">{user?.name}</h2>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>My Application</DropdownMenuItem>
-                <DropdownMenuItem>Saved Products</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer bg-red-600 text-white" onClick={handleLogOut}>
-                  <LogOut></LogOut>
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> : <Button asChild>
-              <Link href="/login" className="gap-2">
-                <LogIn className="h-4 w-4" />
-                Sign In
-              </Link>
-            </Button>}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <div className="flex items-center justify-center gap-2">
+                    <Avatar>
+                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarFallback>User</AvatarFallback>
+                    </Avatar>
+                    <h2 className="font-bold">{user.name}</h2>
+                    <ChevronDown className="h-4 w-4" />
+                  </div>
+                </DropdownMenuTrigger>
 
-            {/* Mobile Menu */}
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Package className="mr-2 h-4 w-4" />
+                    My Application
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Bookmark className="mr-2 h-4 w-4" />
+                    Saved Products
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <Link href='/user/profile'>
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer bg-red-600 text-white"
+                    onClick={handleLogOut}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button asChild>
+                <Link href="/login" className="gap-2">
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </Link>
+              </Button>
+            )}
+
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger className="">
+              <SheetTrigger>
                 <Menu className="h-6 w-6" />
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px]">
@@ -198,7 +190,7 @@ export default function Navbar() {
                         {item.title}
                       </Link>
                       <div className="ml-2 space-y-2">
-                        {item.items.map((subItem) => (
+                        {item.items?.map((subItem) => (
                           <Link
                             key={subItem.name}
                             href={subItem.href}
@@ -226,6 +218,3 @@ export default function Navbar() {
     </nav>
   );
 }
-
-
-

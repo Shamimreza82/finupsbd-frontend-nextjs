@@ -21,6 +21,8 @@ import {
 import { z } from "zod";
 import { registerValidationSchema } from "./registerValidation";
 import { useRouter } from "next/navigation";
+import { registerUser } from "@/services/AuthService";
+import { toast } from "sonner";
 
 
 
@@ -35,11 +37,11 @@ export default function RegisterForm() {
   const form = useForm<z.infer<typeof registerValidationSchema>>({
     resolver: zodResolver(registerValidationSchema),
     defaultValues: {
-      name: "reza",
-      email: "reza@gmail.com",
+      name: "robin",
+      email: "robin@gmail.com",
       phone: "01910479167",
-      password: "11223344",
-      confirmPassword: "11223344",
+      password: "123456",
+      confirmPassword: "123456",
     },
   });
 
@@ -52,8 +54,14 @@ export default function RegisterForm() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log(data);
       // Handle successful registration
-    //  const result = await registerUser(data)  
-    //   console.log(result)
+     const result = await registerUser(data)  
+      console.log(result)
+
+      if(!result.success){
+        toast.error("Registration failed. Please try again")
+      } 
+      toast.success(result.message)
+      router.push('/login')
       setEmail(data.email)
       setOpenOtpVerificition(true)
     } catch (error: any) {
@@ -63,10 +71,10 @@ export default function RegisterForm() {
     }
   }
 
-  const handleSocialLogin = (provider: "google" | "apple") => {
-    // Implement social login logic
-    console.log(`Logging in with ${provider}`);
-  };
+  // const handleSocialLogin = (provider: "google" | "apple") => {
+  //   // Implement social login logic
+  //   console.log(`Logging in with ${provider}`);
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

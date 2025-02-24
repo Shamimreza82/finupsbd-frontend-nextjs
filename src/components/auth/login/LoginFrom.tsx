@@ -24,10 +24,12 @@ import { loginUser } from "@/services/AuthService";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
+
 export default function LoginFrom() {
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter()
+
 
   const form = useForm<z.infer<typeof loginValidationSchema>>({
     resolver: zodResolver(loginValidationSchema),
@@ -44,10 +46,9 @@ export default function LoginFrom() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       const result = await loginUser(data)
-      console.log(result.meassage)
       if(result.success){
         toast.success('Login successfully')
-        router.push("/")
+        router.push('/')
       }
 
     } catch (error: any) {

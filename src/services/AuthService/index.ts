@@ -1,5 +1,6 @@
 "use server"
 
+import { DecodedUser } from "@/types/user";
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 
@@ -80,22 +81,21 @@ export const loginUser = async (userData: FieldValues) => {
 
 
 
-export const getCurrentUser = async () => {
-    const accessToken = (await cookies()).get("accessToken")?.value
-
-
-    if (!accessToken) {
-        console.error("No token found");
-        return null
-    }
-
+export const getCurrentUser = async (): Promise<DecodedUser | null> => {
+    const accessToken = (await cookies()).get("accessToken")?.value;
+    if (!accessToken) return null;
+  
     try {
-        const decodedData = jwtDecode(accessToken);
-        return decodedData;
+      // Pass DecodedUser as a generic, so jwtDecode returns that type
+      const decodedData = jwtDecode<DecodedUser>(accessToken);
+      return decodedData;
     } catch (error) {
-        console.error("Token decoding failed:", error);
+      console.error("Token decoding failed:", error);
+      return null; // or throw an error
     }
-};
+  };
+
+
 
 
 export const logout = async() => {
