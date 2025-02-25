@@ -4,11 +4,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";   
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 
-import { Loader2, Apple} from "lucide-react";
+import { Loader2, Apple } from "lucide-react";
 import { useState } from "react";
 import {
   Form,
@@ -37,8 +37,8 @@ export default function RegisterForm() {
   const form = useForm<z.infer<typeof registerValidationSchema>>({
     resolver: zodResolver(registerValidationSchema),
     defaultValues: {
-      name: "robin",
-      email: "robin@gmail.com",
+      name: "Reza",
+      email: "shamimrezabd67@gmail.com",
       phone: "01910479167",
       password: "123456",
       confirmPassword: "123456",
@@ -48,20 +48,23 @@ export default function RegisterForm() {
   async function onSubmit(data: z.infer<typeof registerValidationSchema>) {
     setIsLoading(true);
     setServerError(null);
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log(data);
       // Handle successful registration
-     const result = await registerUser(data)  
+      const result = await registerUser(data)
       console.log(result)
 
-      if(!result.success){
+      if (!result.success) {
         toast.error("Registration failed. Please try again")
-      } 
+      }
       toast.success(result.message)
-      router.push('/login')
+
+      if (result.success) {
+        router.push('/login')
+      }
       setEmail(data.email)
       setOpenOtpVerificition(true)
     } catch (error: any) {
@@ -215,7 +218,7 @@ export default function RegisterForm() {
               </span>
             </div>
           </div>
-{/* 
+          {/* 
           <div className="flex gap-4">
             <Button
               variant="outline"

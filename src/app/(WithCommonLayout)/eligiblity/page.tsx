@@ -54,9 +54,10 @@ const EligiblityPage = () => {
       {submissionData ? (
         <LoanEligiblityComparison submissionData={submissionData} />
       ) : (
-        <div className="text-center py-8">
-          <p>No eligibility data found. Please complete the eligibility check first.</p>
-        </div>
+        // <div className="text-center py-8">
+        //   <p>No eligibility data found. Please complete the eligibility check first.</p>
+        // </div>
+        <LoanEligiblityComparison submissionData={submissionData} />
       )}
     </div>
   );
