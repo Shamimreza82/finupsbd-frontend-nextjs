@@ -1,7 +1,11 @@
 export const protechedRoute = [
-    '/login',
-    '/admin', 
-    '/admin/:page', 
-    '/user', 
-    '/user/:page'
-]
+    "/login",
+    "/register",
+    "/user",
+    "/user/:path*",
+    "/admin",
+    "/admin/:path*",
+    "/super-admin",
+    "/super-admin/:path*",
+    "/loan-application",
+  ]

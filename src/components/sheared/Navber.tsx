@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, Globe, LogIn, LogOut, Package, Bookmark, User, ChevronDown } from "lucide-react";
@@ -26,6 +26,7 @@ import { logout } from "@/services/AuthService";
 import { protechedRoute } from "@/contants";
 import { usePathname, useRouter } from "next/navigation";
 import { navItems } from "./navberConstant";
+import { TUser } from "@/types/user";
 
 
 
@@ -37,6 +38,12 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const { user, setIsLoading } = useUser()
+
+
+useEffect(() => {
+  setIsLoading(true)
+}, [])
+
 
   const handleLogOut = () => {
     logout()

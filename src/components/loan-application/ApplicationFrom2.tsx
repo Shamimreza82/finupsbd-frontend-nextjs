@@ -825,8 +825,8 @@
 //               Edit
 //             </button>
 //           </div>
-//           <p><strong>Description:</strong> {data.financialObligations.description}</p>
-//           <p><strong>Amount:</strong> {data.financialObligations.amount}</p>
+//           {/* <p><strong>Description:</strong> {data.financialObligations.description}</p>
+//           <p><strong>Amount:</strong> {data.financialObligations.amount}</p> */}
 //         </div>
 
 //         {/* Document Uploads Preview */}
@@ -920,7 +920,7 @@
 //                     Back
 //                   </button>
 //                 )}
-//                 {step < 5 ? (
+//                 {step < 8 ? (
 //                   <button
 //                     type="button"
 //                     onClick={nextStep}

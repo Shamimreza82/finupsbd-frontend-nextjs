@@ -37,10 +37,8 @@ export const middleware = async (request: NextRequest) => {
 
     const isAllowed = routes.some((route: any) => route.test(pathname));
     if (isAllowed) {
-      
       return NextResponse.next();
     }
-
     return NextResponse.redirect(new URL("/", request.url))
   }
 }

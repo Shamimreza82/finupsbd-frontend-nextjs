@@ -48,7 +48,7 @@ export default function LoginFrom() {
       const result = await loginUser(data)
       if(result.success){
         toast.success('Login successfully')
-        router.push('/')
+        router.push('/user/profile')
       }
 
     } catch (error: any) {

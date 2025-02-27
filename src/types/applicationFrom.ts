@@ -10,7 +10,7 @@
 
 
 
-  
+
 //   type ApplicationUserInfo = {
 //     fullName: string;
 //     fatherName: string;
@@ -29,7 +29,7 @@
 //     propertyType: "RESIDENTIAL" | "COMMERCIAL" | "LAND";
 //     approximateValue: number;
 //   };
-  
+
 //   type Address = {
 //     houseFlatNo: string;
 //     streetRoad: string;
@@ -40,7 +40,7 @@
 //     lengthOfStayYears: number;
 //     ownershipStatus: "OWNED" | "RENTED" | "LEASED" | "OTHER";
 //   };
-  
+
 //   type EmploymentFinancialInfo = {
 //     employmentStatus: "SALARIED" | "SELF_EMPLOYED" | "BUSINESS_OWNER";
 //     jobTitle: string;
@@ -58,7 +58,7 @@
 //     taxIdentificationNumber?: string;
 //     currentCreditScore?: number;
 //   };
-  
+
 //   type LoanRequestSpecifications = {
 //     loanType: "PERSONAL" | "HOME" | "CAR" | "BUSINESS" | "EDUCATION" | "OTHER";
 //     loanAmountRequested: number;
@@ -67,7 +67,7 @@
 //     proposedEMIStartDate: string;
 //     repaymentPreferences: string;
 //   };
-  
+
 //   type FinancialObligation = {
 //     lenderName: string;
 //     loanBalance: number;
@@ -80,7 +80,7 @@
 //     balance: number;
 //     emi: number;
 //   };
-  
+
 //   type DocumentFile = {
 //     type:
 //       | "NATIONAL_ID"
@@ -97,7 +97,7 @@
 //     fileSizeMB: number;
 //     fileType: string;
 //   };
-  
+
 
 
 export interface applicationFromTypes {
@@ -157,7 +157,7 @@ export interface applicationFromTypes {
     outstandingAmount: number
     monthlyPayment: number
   }
-  uploadedDocuments: { 
+  uploadedDocuments: {
     type:
     | "NATIONAL_ID"
     | "INCOME_PROOF"
@@ -169,10 +169,25 @@ export interface applicationFromTypes {
     | "UTILITY_BILL"
     | "PROPERTY_DOCUMENT"
     | "SUPPORTING_DOCUMENT";
-  filePath: string;
-  fileSizeMB: number;
-  fileType: string;
+    filePath: string;
+    fileSizeMB: number;
+    fileType: string;
   }[]
+  consentAndDeclaration: {
+    consent: boolean,
+    privacy: boolean,
+    nda: boolean
+    accuracy: boolean,
+    signature: string,
+    date: string,
+  }
+  dataSecurityProtocols: {
+    encryption: boolean,
+    twoFactor: boolean,
+    rbac: boolean,
+    retention: boolean,
+    withdraw: boolean,
+  }
 }
 
 // export type UploadedDocuments = {

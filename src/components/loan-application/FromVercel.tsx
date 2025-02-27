@@ -87,6 +87,40 @@ const applicationFormSchema = z.object({
       fileType: z.string(),
     }),
   ),
+  consentAndDeclaration: z.object({
+    consent: z.boolean().refine((val) => val === true, {
+      message: "You must agree to the consent and authorization",
+    }),
+    privacy: z.boolean().refine((val) => val === true, {
+      message: "You must agree to the privacy agreement",
+    }),
+    nda: z.boolean().refine((val) => val === true, {
+      message: "You must agree to the non-disclosure agreement",
+    }),
+    accuracy: z.boolean().refine((val) => val === true, {
+      message: "You must confirm the accuracy of provided information",
+    }),
+    signature: z.string().min(1, "Digital signature is required"),
+    date: z.string().min(1, "Date is required"),
+  }),
+  dataSecurityProtocols: z.object({
+    encryption: z.boolean().refine((val) => val === true, {
+      message: "You must acknowledge the encryption standards",
+    }),
+    twoFactor: z.boolean().refine((val) => val === true, {
+      message: "You must agree to two-factor authentication",
+    }),
+    rbac: z.boolean().refine((val) => val === true, {
+      message: "You must acknowledge the access control policy",
+    }),
+    retention: z.boolean().refine((val) => val === true, {
+      message: "You must agree to the data retention policy",
+    }),
+    withdraw: z.boolean().refine((val) => val === true, {
+      message: "You must acknowledge the right to withdraw information",
+    }),
+  })
+
 })
 
 // Infer the form values type from the schema.
@@ -168,6 +202,14 @@ const ApplicationFormVercel = () => {
         amount: 0,
       },
       uploadedDocuments: [],
+      consentAndDeclaration: {
+        consent: false,
+        privacy: false,
+        nda: false,
+        accuracy: false,
+        signature: "",
+        date: "",
+      }
     },
   })
 
@@ -261,11 +303,11 @@ const ApplicationFormVercel = () => {
     }
   }
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, 5))
+  const nextStep = () => setStep((prev) => Math.min(prev + 1, 7))
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0))
 
   const renderStepContent = () => {
-    if (isPreview) return null
+
 
     switch (step) {
       case 0:
@@ -887,6 +929,184 @@ const ApplicationFormVercel = () => {
             </div>
           </div>
         )
+      case 6:
+        return (
+          <div className="max-w-2xl mx-auto p-6 space-y-8">
+            <div className="space-y-4">
+              <h2 className="font-medium">Applicant Consent and Authorization</h2>
+              <div className="flex items-start space-x-2">
+                <div className="flex flex-col">
+                  <div className="flex items-start space-x-2">
+                    <input type="checkbox" className="mt-1 rounded border-gray-300" {...register("consentAndDeclaration.consent")} />
+                    <label className="text-sm leading-relaxed">
+                      I authorize Standard chartered bank to conduct verification checks, contact my employer, validate my
+                      identity with government databases, and perform credit evaluations as required.
+                    </label>
+                  </div>
+                  {errors.consentAndDeclaration?.consent && <span className="text-sm text-red-500 mt-1">{errors.consentAndDeclaration?.consent.message}</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="font-medium">Privacy Agreement</h2>
+              <div className="flex items-start space-x-2">
+                <div className="flex flex-col">
+                  <div className="flex items-start space-x-2">
+                    <input type="checkbox" className="mt-1 rounded border-gray-300" {...register("consentAndDeclaration.privacy")} />
+                    <label className="text-sm leading-relaxed">
+                      I acknowledge that Standard chartered bank will use my data solely for processing and compliance,
+                      adhering to data privacy regulations in Bangladesh and internationally
+                    </label>
+                  </div>
+                  {errors.consentAndDeclaration?.privacy && <span className="text-sm text-red-500 mt-1">{errors.consentAndDeclaration?.privacy.message}</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="font-medium">Non-Disclosure Agreement</h2>
+              <div className="flex items-start space-x-2">
+                <div className="flex flex-col">
+                  <div className="flex items-start space-x-2">
+                    <input type="checkbox" className="mt-1 rounded border-gray-300" {...register("consentAndDeclaration.nda")} />
+                    <label className="text-sm leading-relaxed">
+                      I understand my data will remain private and undisclosed except as mandated by regulatory authorities
+                    </label>
+                  </div>
+                  {errors.consentAndDeclaration?.nda && <span className="text-sm text-red-500 mt-1">{errors.consentAndDeclaration?.nda.message}</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="font-medium">Declaration of Accuracy</h2>
+              <div className="flex items-start space-x-2">
+                <div className="flex flex-col">
+                  <div className="flex items-start space-x-2">
+                    <input type="checkbox" className="mt-1 rounded border-gray-300" {...register("consentAndDeclaration.accuracy")} />
+                    <label className="text-sm leading-relaxed">
+                      I confirm that all details provided are true to the best of my knowledge.
+                    </label>
+                  </div>
+                  {errors.consentAndDeclaration?.accuracy && <span className="text-sm text-red-500 mt-1">{errors.consentAndDeclaration?.accuracy.message}</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">Digital Signature (Type full name as e-signature)</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded-md"
+                  placeholder="Mr. Aslam Rossa"
+                  {...register("consentAndDeclaration.signature")}
+                />
+                {errors.consentAndDeclaration?.signature && <span className="text-sm text-red-500">{errors.consentAndDeclaration?.signature.message}</span>}
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">Date (DD/MM/YYYY)</label>
+                <input type="date" className="w-full px-3 py-2 border rounded-md" {...register("consentAndDeclaration.date")} />
+                {errors.consentAndDeclaration?.date && <span className="text-sm text-red-500">{errors.consentAndDeclaration?.date.message}</span>}
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <p className="text-xs text-muted-foreground">
+                Financial data is encrypted and accessed strictly under privacy policies. Only credit assessment personnel
+                may view this information.
+              </p>
+            </div>
+          </div>
+        )
+      case 7:
+        return (
+          <div className="max-w-2xl mx-auto p-6 space-y-8">
+            <div className="space-y-2">
+              <h1 className="text-2xl font-semibold tracking-tight">Data Security Protocols at Standard chartered bank</h1>
+              <p className="text-sm text-muted-foreground">Update your photo and personal details here.</p>
+            </div>
+              <div className="space-y-4">
+                <h2 className="font-medium">Encryption Standards</h2>
+                <div className="flex items-start space-x-2">
+                  <div className="flex flex-col">
+                    <div className="flex items-start space-x-2">
+                      <input type="checkbox" className="mt-1 rounded border-gray-300" {...register("dataSecurityProtocols.encryption")} />
+                      <label className="text-sm leading-relaxed">
+                        We use industry-standard SSL and TLS encryption to protect all data in transit. Data at rest is
+                        secured by AES-256 encryption
+                      </label>
+                    </div>
+                    {errors.dataSecurityProtocols?.encryption && <span className="text-sm text-red-500 mt-1">{errors.dataSecurityProtocols?.encryption.message}</span>}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="font-medium">Two-Factor Authentication (2FA)</h2>
+                <div className="flex items-start space-x-2">
+                  <div className="flex flex-col">
+                    <div className="flex items-start space-x-2">
+                      <input type="checkbox" className="mt-1 rounded border-gray-300" {...register("dataSecurityProtocols.twoFactor")} />
+                      <label className="text-sm leading-relaxed">
+                        Upon submission, you'll be prompted for a One-Time Password (OTP) sent to your registered mobile.
+                      </label>
+                    </div>
+                    {errors.dataSecurityProtocols?.twoFactor && <span className="text-sm text-red-500 mt-1">{errors.dataSecurityProtocols?.twoFactor.message}</span>}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="font-medium">Role-Based Access Control (RBAC)</h2>
+                <div className="flex items-start space-x-2">
+                  <div className="flex flex-col">
+                    <div className="flex items-start space-x-2">
+                      <input type="checkbox" className="mt-1 rounded border-gray-300" {...register("dataSecurityProtocols.rbac")} />
+                      <label className="text-sm leading-relaxed">
+                        Only certified loan officers, auditors, and designated staff can view your application, based on
+                        strict role assignments.
+                      </label>
+                    </div>
+                    {errors.dataSecurityProtocols?.rbac && <span className="text-sm text-red-500 mt-1">{errors.dataSecurityProtocols?.rbac.message}</span>}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="font-medium">Data Retention Policy</h2>
+                <div className="flex items-start space-x-2">
+                  <div className="flex flex-col">
+                    <div className="flex items-start space-x-2">
+                      <input type="checkbox" className="mt-1 rounded border-gray-300" {...register("dataSecurityProtocols.retention")} />
+                      <label className="text-sm leading-relaxed">
+                        Personal data is retained as per banking regulations and disposed of securely once no longer needed.
+                      </label>
+                    </div>
+                    {errors.dataSecurityProtocols?.retention && <span className="text-sm text-red-500 mt-1">{errors.dataSecurityProtocols?.retention.message}</span>}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="font-medium">Right to Withdraw & Update Information</h2>
+                <div className="flex items-start space-x-2">
+                  <div className="flex flex-col">
+                    <div className="flex items-start space-x-2">
+                      <input type="checkbox" className="mt-1 rounded border-gray-300" {...register("dataSecurityProtocols.withdraw")} />
+                      <label className="text-sm leading-relaxed">
+                        You may request to correct or withdraw your application before loan approval.
+                      </label>
+                    </div>
+                    {errors.dataSecurityProtocols?.withdraw && <span className="text-sm text-red-500 mt-1">{errors.dataSecurityProtocols?.withdraw.message}</span>}
+                  </div>
+                </div>
+              </div>
+          </div>
+        )
+
       default:
         return null
     }
@@ -1099,6 +1319,8 @@ const ApplicationFormVercel = () => {
     )
   }
 
+
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row">
       {/* Sidebar */}
@@ -1122,6 +1344,8 @@ const ApplicationFormVercel = () => {
             "Loan Request",
             "Financial Obligations",
             "Document Uploads",
+            "Consent and Declaration",
+            "Final Data Security Overview",
           ].map((label, idx) => (
             <li
               key={idx}
@@ -1154,50 +1378,36 @@ const ApplicationFormVercel = () => {
             <h1 className="text-3xl font-bold text-foreground">
               {isPreview ? "Preview Your Application" : "Loan Application Form"}
             </h1>
-            {!isPreview && <p className="text-muted-foreground">Step {step + 1} of 6</p>}
+            {!isPreview && <p className="text-muted-foreground">Step {step + 1} of 7</p>}
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             {isPreview ? renderPreview() : renderStepContent()}
             {!isPreview && (
               <div className="mt-8 flex justify-between">
                 {step > 0 && (
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
                     onClick={prevStep}
-                    disabled={isSubmitting}
-                    className="flex items-center"
+                    className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300 transition duration-200"
                   >
-                    <ChevronLeft className="mr-2 h-4 w-4" />
                     Back
-                  </Button>
+                  </button>
                 )}
                 {step < 5 ? (
-                  <Button type="button" onClick={nextStep} disabled={isSubmitting} className="flex items-center">
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200"
+                  >
                     Next
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  </button>
                 ) : (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button type="submit" disabled={isSubmitting} className="flex items-center">
-                        {isSubmitting ? "Submitting..." : "Submit Application"}
-                        <Save className="ml-2 h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Submit Application?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to submit your loan application? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleFinalSubmit}>Submit</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <button
+                    type="submit"
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition duration-200"
+                  >
+                    Submit Application
+                  </button>
                 )}
               </div>
             )}

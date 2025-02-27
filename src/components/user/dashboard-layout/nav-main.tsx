@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, Frame, PieChart, type LucideIcon } from "lucide-react"
 
 import {
   Collapsible,
@@ -17,6 +17,23 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import Link from "next/link"
+import { NavProfile } from "./nav-profile"
+
+
+const navData =  [
+  {
+    name: "Profile",
+    url: "/user/profile",
+    icon: Frame,
+  },
+  {
+    name: "Saved Products",
+    url: "/user/saved-products",
+    icon: PieChart,
+  },
+]
+
 
 export function NavMain({
   items,
@@ -34,7 +51,8 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+      <NavProfile projects={navData} />
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -56,9 +74,9 @@ export function NavMain({
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
+                        <Link href={subItem.url}>
                           <span>{subItem.title}</span>
-                        </a>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}
